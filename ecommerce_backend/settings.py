@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     'core',
 ]
@@ -128,7 +129,12 @@ AUTHENTICATION_BACKENDS = [
 ]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES':
+         ['rest_framework.authentication.TokenAuthentication'],
+    
 
+}
 STATIC_URL = 'static/'
 
 # Default primary key field type
