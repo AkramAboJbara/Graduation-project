@@ -12,22 +12,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
-class SignupView(APIView):
-    def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "User created successfully!"}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class LoginView(APIView):
-    def post(self, request):
-        serializer = LoginSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.validated_data['user']
-            user_data = UserSerializer(user).data  # Serialize user data
-            return Response(user_data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 def homepage(request):
     return JsonResponse({"message": "Welcome to the E-commerce Backend API!"})
