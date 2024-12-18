@@ -8,17 +8,18 @@ from rest_framework.authtoken.models import Token
 from django.conf import settings
 
 class User(AbstractUser):
-  
+    email = models.EmailField(unique=True, blank=False, null=False)
     is_active = models.BooleanField(default=True, help_text="Designates whether this user should be treated as active.")
     phone_number = models.CharField(max_length=15, null=True, blank=True, help_text="User's contact phone number.")
     address = models.TextField(null=True, blank=True, help_text="User's residential address.")
 
-    """
-    the fields i did not create already exist in AbstractUser (line - 3)  
-    """
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []  
 
-    def __str__(self):
-        return self.username
+    def save(self, *args, **kwargs):
+        if not self.username:
+            self.username = self.email
+        super(User, self).save(*args, **kwargs)
 
 
 class Category(models.Model):

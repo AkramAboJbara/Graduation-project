@@ -3,17 +3,21 @@ from .models import User, Product, Cart, ShoppingCart, Order, OrderItem, Categor
 from django.contrib.auth import authenticate
 
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)  # Mark the password field as write-only
-
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'phone_number', 'address', 'is_active', 'password']
+        fields = ['email', 'password', 'phone_number', 'address', 'first_name', 'last_name', 'is_active']
+        extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = User(**validated_data)  
-        user.set_password(password)  
-        user.save() 
+        user = User(
+            email=validated_data['email'],
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', ''),
+            phone_number=validated_data.get('phone_number', ''),
+            address=validated_data.get('address', ''),
+        )
+        user.set_password(validated_data['password'])
+        user.save()
         return user
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -24,7 +28,7 @@ class ProductSerializer(serializers.ModelSerializer):
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
-        fields = '__all__'
+        fields =  ['id','quantity']
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
     class Meta:
@@ -47,17 +51,17 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True, required=True)
 
     def validate(self, data):
-        username = data.get('username')
+        email = data.get('email')
         password = data.get('password')
-        user = authenticate(username=username, password=password)
+        user = authenticate(email=email, password=password)
 
         if not user:
             raise serializers.ValidationError({
-                "non_field_errors": ["Invalid username or password"]
+                "non_field_errors": ["Invalid email or password"]
             })
 
         if not user.is_active:

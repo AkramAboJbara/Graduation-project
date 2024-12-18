@@ -8,6 +8,12 @@ from django.contrib.auth import authenticate
 from core.models import  User
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from core.serializers import UserSerializer , LoginSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import views as auth_views
+from django.urls import reverse_lazy
 # Create your views here.
 
 
@@ -24,8 +30,37 @@ class LoginView(APIView):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data['user']
-            user_data = UserSerializer(user).data  # Serialize user data
+            user_data = UserSerializer(user).data
             return Response(user_data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+
+
+
+class LogoutView(APIView):
+    def post(self, request):
+        refresh_token = request.data.get('refresh')
+        if not refresh_token:
+            return Response({"error": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Logged out successfully."}, status=status.HTTP_200_OK)
+    
+
+
+
+
+class CustomPasswordResetView(auth_views.PasswordResetView):
+    template_name = 'password_reset.html'
+    email_template_name = 'password_reset_email.html'
+    success_url = reverse_lazy('password_reset_done')
+
+class CustomPasswordResetDoneView(auth_views.PasswordResetDoneView):
+    template_name = 'password_reset_done.html'
+
+class CustomPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    template_name = 'password_reset_confirm.html'
+    success_url = reverse_lazy('password_reset_complete')
+
+class CustomPasswordResetCompleteView(auth_views.PasswordResetCompleteView):
+    template_name = 'password_reset_complete.html'
+
 
 authentication_classes = [TokenAuthentication]    
