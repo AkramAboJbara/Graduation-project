@@ -5,15 +5,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
 from rest_framework.filters import SearchFilter
-from .models import Category, Product, User
-from .serializers import CategorySerializer, ProductSerializer, UserSerializer ,LoginSerializer
+from .models import Cart, Category, OrderItem, Product, User
+from .serializers import CartSerializer, CategorySerializer, ProductSerializer, UserSerializer ,LoginSerializer
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from .models import Product, ShoppingCart
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-
+from rest_framework.permissions import IsAuthenticated
 
 def homepage(request):
     return JsonResponse({"message": "Welcome to the E-commerce Backend API!"})
@@ -65,35 +65,6 @@ class CategoryListAPIView(APIView):
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)    
     
-class AddToCartView(APIView):
-    @method_decorator(login_required) 
-    def post(self, request):
-        product_id = request.data.get('product_id')
-        quantity = request.data.get('quantity')
-        if not product_id or not quantity:
-            return Response({"error": "Product ID and quantity are required."}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            quantity = int(quantity)
-        except ValueError:
-            return Response({"error": "Quantity must be an integer."}, status=status.HTTP_400_BAD_REQUEST)
-        if quantity < 1:
-            return Response({"error": "Quantity must be at least 1."}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            product = Product.objects.get(id=product_id)
-        except Product.DoesNotExist:
-            return Response({"error": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        if quantity > product.quantity:
-            return Response({"error": f"Insufficient stock. Only {product.quantity} items available."}, status=status.HTTP_400_BAD_REQUEST)
-        cart_item, created = ShoppingCart.objects.get_or_create(user=request.user, product=product)
-        if not created: 
-            cart_item.quantity += quantity
-            cart_item.save()
-        else:
-            cart_item.quantity = quantity
-            cart_item.save()
-        return Response({"message": "Item added to cart successfully."}, status=status.HTTP_200_OK)
 
 
-    
 authentication_classes = [TokenAuthentication]    
