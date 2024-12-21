@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CategoryListAPIView, HomepageProductAPIView, homepage, AddToCartView
+from .views import CategoryListAPIView, HomepageProductAPIView, homepage
 from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
