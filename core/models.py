@@ -14,7 +14,8 @@ class User(AbstractUser):
     address = models.TextField(null=True, blank=True, help_text="User's residential address.")
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []  
+    #new
+    REQUIRED_FIELDS = ['username']  
 
     def save(self, *args, **kwargs):
         if not self.username:

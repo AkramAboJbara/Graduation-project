@@ -9,10 +9,10 @@ from .views import (
 )
 
 urlpatterns = [
-    path('signup/', SignupView.as_view(), name='signup'),
-    path('login/', LoginView.as_view(), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),
-    path('api-token-auth', obtain_auth_token),
+    path('api/signup/', SignupView.as_view(), name='signup'),
+    path('api/login/', LoginView.as_view(), name='login'),
+    path('api/logout/', LogoutView.as_view(), name='logout'),
+    path('api/api-token-auth', obtain_auth_token),
     path('password_reset/', CustomPasswordResetView.as_view(), name='password_reset'),
     path('password_reset_done/', CustomPasswordResetDoneView.as_view(), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', CustomPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
