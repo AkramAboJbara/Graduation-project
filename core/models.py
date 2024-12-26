@@ -12,11 +12,12 @@ class User(AbstractUser):
     is_active = models.BooleanField(default=True, help_text="Designates whether this user should be treated as active.")
     phone_number = models.CharField(max_length=15, null=True, blank=True, help_text="User's contact phone number.")
     address = models.TextField(null=True, blank=True, help_text="User's residential address.")
-
+    logged_in = models.BooleanField(default=True)
+    
     USERNAME_FIELD = 'email'
     #new
     REQUIRED_FIELDS = ['username']  
-
+    
     def save(self, *args, **kwargs):
         if not self.username:
             self.username = self.email
@@ -41,11 +42,10 @@ class Product(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.PositiveIntegerField()
-    image = models.ImageField(upload_to='products/')
+    image = models.ImageField(upload_to='products_images/')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0.0, help_text="Discount percentage (e.g., 10 for 10%)")
-    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, help_text="Fixed discount amount")
 
     def __str__(self):
         return self.name
@@ -61,7 +61,7 @@ class Cart(models.Model):
 
 
 
-class ShoppingCart(models.Model):
+class CartItem(models.Model):
     cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
