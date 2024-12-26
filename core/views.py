@@ -10,10 +10,11 @@ from .serializers import CartSerializer, CategorySerializer, ProductSerializer, 
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from .models import Product, ShoppingCart
+from .models import Product, CartItem
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets
 
 def homepage(request):
     return JsonResponse({"message": "Welcome to the E-commerce Backend API!"})
@@ -68,3 +69,9 @@ class CategoryListAPIView(APIView):
 
 
 authentication_classes = [TokenAuthentication]    
+
+class viewsets_product(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name','description']
