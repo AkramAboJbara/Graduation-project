@@ -12,11 +12,12 @@ class User(AbstractUser):
     is_active = models.BooleanField(default=True, help_text="Designates whether this user should be treated as active.")
     phone_number = models.CharField(max_length=15, null=True, blank=True, help_text="User's contact phone number.")
     address = models.TextField(null=True, blank=True, help_text="User's residential address.")
-
+    logged_in = models.BooleanField(default=True)
+    
     USERNAME_FIELD = 'email'
     #new
     REQUIRED_FIELDS = ['username']  
-
+    
     def save(self, *args, **kwargs):
         if not self.username:
             self.username = self.email
