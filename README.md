@@ -13,3 +13,11 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',  # Frontend or other origins
 ]
  
+
+## remove files and folders from tracking
+
+to remove files and folders that in gitignorefrom tracking run this command
+
+```bash
+git rm -r --cached .
+```
