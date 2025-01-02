@@ -58,14 +58,6 @@ class HomepageProductAPIView(APIView):
     def filter_queryset(self, queryset):
         search_filter = filters.SearchFilter()
         return search_filter.filter_queryset(self.request, queryset, self)
-    
-    
-class CategoryListAPIView(APIView):
-    def get(self, request):
-        categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)    
-    
 
 
 authentication_classes = [TokenAuthentication]    
@@ -73,5 +65,11 @@ authentication_classes = [TokenAuthentication]
 class viewsets_product(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name','description']
+    
+class viewsets_category(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['name','description']
