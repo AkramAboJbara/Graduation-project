@@ -6,7 +6,7 @@ from rest_framework import status
 from django.contrib.auth import authenticate
 from rest_framework.filters import SearchFilter
 from .models import Cart, Category, OrderItem, Product, User
-from .serializers import CartSerializer, CategorySerializer, ProductSerializer, UserSerializer ,LoginSerializer
+from .serializers import * 
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -73,3 +73,116 @@ class viewsets_category(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['name','description']
+
+
+
+
+
+#@login_required
+class AddToCartAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        product_id = request.data.get('product_id')
+        quantity = request.data.get('quantity', 1)
+
+        if not product_id:
+            return Response({"error": "Product ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if product.stock < int(quantity):
+            return Response(
+                {"error": f"Not enough stock available, Only {product.stock} items left."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # get or create the user's cart
+        cart, created = Cart.objects.get_or_create(user=user)
+
+        # get or create the cart item
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+        if not created:
+            if product.stock < (cart_item.quantity + int(quantity)):
+                return Response(
+                    {"error": f"Not enough stock available. Only {product.stock} items left."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            cart_item.quantity += int(quantity)
+        else:
+            cart_item.quantity = int(quantity)
+        cart_item.save()
+        # decrease the product stock
+        product.stock -= int(quantity)
+        product.save()
+        # update the cart total
+        cart.total += product.price * int(quantity)
+        cart.save()
+        serializer = CartItemSerializer(cart_item)
+        return Response(
+            {
+                "cart_item": serializer.data,
+                "total_price": cart.total
+            },
+            status=status.HTTP_201_CREATED
+        )
+    
+    
+class RemoveFromCartAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        user = request.user
+        product_id = request.data.get('product_id')
+        quantity_to_remove = request.data.get('quantity', 1)  # default to 1 if not provided
+
+        if not product_id:
+            return Response({"error": "Product ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            cart = Cart.objects.get(user=user)
+        except Cart.DoesNotExist:
+            return Response({"error": "Cart not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            cart_item = CartItem.objects.get(cart=cart, product=product)
+        except CartItem.DoesNotExist:
+            return Response({"error": "Product not found in the cart"}, status=status.HTTP_404_NOT_FOUND)
+
+        # validate the quantity to remove
+        if quantity_to_remove > cart_item.quantity:
+            return Response(
+                {"error": f"Cannot remove more than {cart_item.quantity} items."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # update the cart total
+        cart.total -= product.price * int(quantity_to_remove)
+        cart.save()
+
+        # update the product stock
+        product.stock += int(quantity_to_remove)
+        product.save()
+        if quantity_to_remove == cart_item.quantity:
+            # remove the entire item from the cart
+            cart_item.delete()
+        else:
+            # decrease the quantity in the cart
+            cart_item.quantity -= int(quantity_to_remove)
+            cart_item.save()
+        return Response(
+            {
+                "message": "Product quantity updated in cart",
+                "total_price": cart.total
+            },
+            status=status.HTTP_200_OK
+        )
