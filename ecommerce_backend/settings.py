@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'ecommerce_backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'graduate_projection',       # Replace with your database name
+        'NAME': 'postgres',       # Replace with your database name
         'USER': 'postgres',           # Replace with your PostgreSQL username
         'PASSWORD': '75395100',   # Replace with your PostgreSQL password
         'HOST': 'localhost',         # Use 'localhost' for local PostgreSQL server
