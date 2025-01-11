@@ -42,6 +42,15 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_price_after_discount(self, obj):
         discount_amount = obj.price * (obj.discount_percentage / 100)
         return obj.price - discount_amount
+    
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if instance.image:
+            representation['image'] = instance.image.url 
+        else:
+            representation['image'] = None
+        return representation 
 
 class CartSerializer(serializers.ModelSerializer):
     class Meta:

@@ -5,16 +5,18 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
 from rest_framework.filters import SearchFilter
-from .models import Cart, Category, OrderItem, Product, User
+from .models import *
 from .serializers import * 
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from .models import Product, CartItem
+from .models import *
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
+from decimal import Decimal
+
 
 def homepage(request):
     return JsonResponse({"message": "Welcome to the E-commerce Backend API!"})
@@ -85,7 +87,7 @@ class AddToCartAPIView(APIView):
     def post(self, request, *args, **kwargs):
         user = request.user
         product_id = request.data.get('product_id')
-        quantity = request.data.get('quantity', 1)
+        quantity = int(request.data.get('quantity', 1))  # quantity should be an integer
 
         if not product_id:
             return Response({"error": "Product ID is required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -95,38 +97,41 @@ class AddToCartAPIView(APIView):
         except Product.DoesNotExist:
             return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        if product.stock < int(quantity):
+        # validate stock
+        if product.stock < quantity:
             return Response(
-                {"error": f"Not enough stock available, Only {product.stock} items left."},
+                {"error": f"Not enough stock available. Only {product.stock} items left."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         # get or create the user's cart
         cart, created = Cart.objects.get_or_create(user=user)
-
-        # get or create the cart item
         cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
         if not created:
-            if product.stock < (cart_item.quantity + int(quantity)):
+            # check if the updated quantity exceeds the stock
+            if product.stock < (cart_item.quantity + quantity):
                 return Response(
                     {"error": f"Not enough stock available. Only {product.stock} items left."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            cart_item.quantity += int(quantity)
+            cart_item.quantity += quantity
         else:
-            cart_item.quantity = int(quantity)
+            cart_item.quantity = quantity
         cart_item.save()
+
         # decrease the product stock
-        product.stock -= int(quantity)
+        product.stock -= quantity
         product.save()
-        # update the cart total
-        cart.total += product.price * int(quantity)
+
+        # recalculate the cart total based on all items in the cart
+        cart_items = CartItem.objects.filter(cart=cart)
+        cart.total = sum(Decimal(str(item.product.price)) * Decimal(str(item.quantity)) for item in cart_items)
         cart.save()
         serializer = CartItemSerializer(cart_item)
         return Response(
             {
                 "cart_item": serializer.data,
-                "total_price": cart.total
+                "total_price": float(cart.total)  # convert decimal to float 
             },
             status=status.HTTP_201_CREATED
         )
@@ -138,7 +143,7 @@ class RemoveFromCartAPIView(APIView):
     def delete(self, request, *args, **kwargs):
         user = request.user
         product_id = request.data.get('product_id')
-        quantity_to_remove = request.data.get('quantity', 1)  # default to 1 if not provided
+        quantity_to_remove = int(request.data.get('quantity', 1))  #quantity should be an integer
 
         if not product_id:
             return Response({"error": "Product ID is required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -152,37 +157,67 @@ class RemoveFromCartAPIView(APIView):
             cart = Cart.objects.get(user=user)
         except Cart.DoesNotExist:
             return Response({"error": "Cart not found"}, status=status.HTTP_404_NOT_FOUND)
-
+        if not cart.items.exists():
+            return Response({"error": "Cart is empty. No items to remove."}, status=status.HTTP_400_BAD_REQUEST)
         try:
             cart_item = CartItem.objects.get(cart=cart, product=product)
         except CartItem.DoesNotExist:
             return Response({"error": "Product not found in the cart"}, status=status.HTTP_404_NOT_FOUND)
 
-        # validate the quantity to remove
-        if quantity_to_remove > cart_item.quantity:
+        if quantity_to_remove > cart_item.quantity: # validate the quantity to remove
             return Response(
                 {"error": f"Cannot remove more than {cart_item.quantity} items."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-        # update the cart total
-        cart.total -= product.price * int(quantity_to_remove)
-        cart.save()
-
-        # update the product stock
-        product.stock += int(quantity_to_remove)
+        product.stock += quantity_to_remove # update the product stock
         product.save()
         if quantity_to_remove == cart_item.quantity:
-            # remove the entire item from the cart
-            cart_item.delete()
+            cart_item.delete() # remove the entire item from the cart
         else:
-            # decrease the quantity in the cart
-            cart_item.quantity -= int(quantity_to_remove)
+            cart_item.quantity -= quantity_to_remove
             cart_item.save()
+
+        # recalculate the cart total based on all items in the cart
+        cart_items = CartItem.objects.filter(cart=cart)
+        cart.total = sum(Decimal(str(item.product.price)) * Decimal(str(item.quantity)) for item in cart_items)
+        cart.save()
+
         return Response(
             {
                 "message": "Product quantity updated in cart",
-                "total_price": cart.total
+                "total_price": float(cart.total)  # convert decimal to float for response
             },
             status=status.HTTP_200_OK
         )
+    
+
+class ViewCartContentApiView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        try:
+            cart = Cart.objects.get(user=user)
+        except Cart.DoesNotExist:
+            return Response(
+                {"message": "No cart exists for this user."},
+                status=status.HTTP_200_OK
+            )
+        cart_items = CartItem.objects.filter(cart=cart)
+        total_price = sum(item.product.price * item.quantity for item in cart_items)
+        response_data = {
+            "total_price": float(total_price),  
+            "products": [
+                {
+                    "product_id": item.product.id,
+                    "product_name": item.product.name,
+                    "quantity": item.quantity,
+                    "price": float(item.product.price * item.quantity),   #convert decimal to float
+                    "image": item.product.image.url if item.product.image else None  
+                }
+                for item in cart_items
+            ]
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)

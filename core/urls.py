@@ -15,4 +15,5 @@ urlpatterns = [
     path('product/', include(router.urls)),
     path('add_to_cart/', AddToCartAPIView.as_view(), name='add-to-cart'),
     path('remove_from_cart/', RemoveFromCartAPIView.as_view(), name='remove-from-cart'),
+    path('view_cart/', ViewCartContentApiView.as_view(), name='view_cart'),
 ]
