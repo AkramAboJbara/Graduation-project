@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
-from django.contrib.auth import views as auth_views
+from django.contrib.auth import views as auth_views , get_user_model
 from django.urls import reverse_lazy
 # Create your views here.
 
@@ -46,7 +46,7 @@ class LoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 
-
+User = get_user_model()
 class LogoutView(APIView):
     def post(self, request):
         # Get the token from the 'Authorization' header
@@ -55,15 +55,15 @@ class LogoutView(APIView):
         if not auth_header:
             return Response({"error": "Authorization header is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Token is in the format: 'Bearer <token>'
+        # Token is in the format: 'Token <token>'
         parts = auth_header.split()
 
         # Ensure the header is properly formatted
-        if len(parts) != 2 or parts[0].lower() != 'bearer':
-            return Response({"error": "Invalid token format."}, status=status.HTTP_400_BAD_REQUEST)
+        if len(parts) != 2 or parts[0].lower() != 'token':
+            return Response({"error": "Invalid token format. Expected 'Token <token>'."}, status=status.HTTP_400_BAD_REQUEST)
 
-        token  = parts[1]
-        
+        token = parts[1]  # Extract the token
+
         # Assuming each user has a unique token saved in a field like 'auth_token'
         try:
             user = User.objects.get(auth_token=token)
