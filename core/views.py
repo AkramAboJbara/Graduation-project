@@ -1,10 +1,13 @@
 from django.http import JsonResponse
-from rest_framework import status, filters
+import django_filters
+from rest_framework import status, filters, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
-from rest_framework.filters import SearchFilter
+
+from django_filters import rest_framework as filters
+
 from .models import *
 from .serializers import * 
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
@@ -16,6 +19,7 @@ from django.utils.decorators import method_decorator
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
 from decimal import Decimal
+from rest_framework import filters
 
 
 def homepage(request):
@@ -69,6 +73,7 @@ class viewsets_product(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['name','description']
+    lookup_field = 'slug'
     
 class viewsets_category(viewsets.ModelViewSet):
     queryset = Category.objects.all()
@@ -220,4 +225,10 @@ class ViewCartContentApiView(APIView):
             ]
         }
 
-        return Response(response_data, status=status.HTTP_200_OK)
+        return Response(response_data, status=status.HTTP_200_OK)    
+class HomepageAPIView(APIView):
+    def get(self, request):
+        
+        categories = Category.objects.all()
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data)
