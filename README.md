@@ -12,7 +12,6 @@
 * Individuals who need Sell he's own Product  (**Seller**)
 * Individuals who are willing to Buying anu product (**Customer**)
 
-## User Stories
 
 ### Authentication
 
