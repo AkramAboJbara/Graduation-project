@@ -18,10 +18,11 @@ SECRET_KEY = 'django-insecure-7!90f&(_e4=8hkd&8)&3pc!l_mmxl7$8mbvejy$m&d^())#4wj
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Adjust for your frontend's URL
+    "https://hamza-masoud.github.io",
 ]
 
 
