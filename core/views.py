@@ -80,6 +80,7 @@ class viewsets_category(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['name','description']
+    lookup_field = 'slug'
 
 
 
