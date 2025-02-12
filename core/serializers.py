@@ -32,12 +32,22 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+class CategoryForProductSerializer(serializers.ModelSerializer):
+    """Serializer for nested category representation inside ProductSerializer."""
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'slug']
+        
 class ProductSerializer(serializers.ModelSerializer):
     price_after_discount = serializers.SerializerMethodField()
-
+    category = CategoryForProductSerializer()
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = [
+            'id', 'price_after_discount', 'name', 'slug', 'description', 
+            'price', 'stock', 'image', 'created_at', 'updated_at', 
+            'discount_percentage', 'category'
+        ]
 
     def get_price_after_discount(self, obj):
         discount_amount = obj.price * (obj.discount_percentage / 100)
@@ -47,7 +57,7 @@ class ProductSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         if instance.image:
-            representation['image'] = instance.image.url 
+            representation['image'] = instance.image
         else:
             representation['image'] = None
         return representation 
@@ -76,14 +86,7 @@ class CategorySerializer(serializers.ModelSerializer):
     products = ProductSerializer(many=True, read_only=True)
     class Meta:
         model = Category
-        fields = '__all__'
-    def to_representation(self, instance):
-        """Customize the representation to move 'products' to the end."""
-        representation = super().to_representation(instance)
-        if 'products' in representation:
-            products = representation.pop('products')  # Remove 'products'
-            representation['products'] = products  # Add it back at the end
-        return representation
+        fields = ['id','name','slug','description','created_at','products']
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
