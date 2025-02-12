@@ -73,9 +73,17 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CategorySerializer(serializers.ModelSerializer):
+    products = ProductSerializer(many=True, read_only=True)
     class Meta:
         model = Category
         fields = '__all__'
+    def to_representation(self, instance):
+        """Customize the representation to move 'products' to the end."""
+        representation = super().to_representation(instance)
+        if 'products' in representation:
+            products = representation.pop('products')  # Remove 'products'
+            representation['products'] = products  # Add it back at the end
+        return representation
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
