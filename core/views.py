@@ -71,8 +71,28 @@ class viewsets_product(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = [filters.SearchFilter]
-    search_fields = ['name','description']
+    search_fields = ['name', 'description']
     lookup_field = 'slug'
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = request.query_params.get('page', 1)  # get the page number from the request
+        paginator = Paginator(queryset, 20)  # show 20 items per page
+
+        try:
+            paginated_products = paginator.page(page)
+        except PageNotAnInteger:
+            paginated_products = paginator.page(1)  
+        except EmptyPage:
+            paginated_products = paginator.page(paginator.num_pages)  # if page is out of range, deliver last page
+
+        serializer = self.get_serializer(paginated_products, many=True)
+
+        return Response({
+            'total_pages': paginator.num_pages,
+            'current_page': paginated_products.number,
+            'products': serializer.data
+        }, status=status.HTTP_200_OK)
 
 
 class viewsets_category(viewsets.ModelViewSet):
