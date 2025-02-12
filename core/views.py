@@ -73,7 +73,8 @@ class viewsets_product(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name','description']
     lookup_field = 'slug'
-    
+
+
 class viewsets_category(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -225,7 +226,9 @@ class ViewCartContentApiView(APIView):
             ]
         }
 
-        return Response(response_data, status=status.HTTP_200_OK)    
+        return Response(response_data, status=status.HTTP_200_OK)  
+    
+    
 class HomepageAPIView(APIView):
     def get(self, request):
         
