@@ -24,7 +24,7 @@ from rest_framework import filters
 def homepage(request):
     return JsonResponse({"message": "Welcome to the E-commerce Backend API!"})
 
-
+"""
 class HomepageProductAPIView(APIView):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
@@ -63,7 +63,7 @@ class HomepageProductAPIView(APIView):
     def filter_queryset(self, queryset):
         search_filter = filters.SearchFilter()
         return search_filter.filter_queryset(self.request, queryset, self)
-
+"""
 
 authentication_classes = [TokenAuthentication]    
 
