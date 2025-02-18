@@ -78,11 +78,11 @@ WSGI_APPLICATION = 'ecommerce_backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',       # Replace with your database name
-        'USER': 'postgres',           # Replace with your PostgreSQL username
-        'PASSWORD': 'Admin',   # Replace with your PostgreSQL password
-        'HOST': 'localhost',         # Use 'localhost' for local PostgreSQL server
-        'PORT': '5432',              # Default PostgreSQL port
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'FpCfXUjlGbHAEWcfrMnBjZyIjKtPvtec',
+        'HOST': 'viaduct.proxy.rlwy.net',
+        'PORT': '36101',
     }
 }
 
