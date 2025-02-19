@@ -240,7 +240,7 @@ class ViewCartContentApiView(APIView):
                     "product_name": item.product.name,
                     "quantity": item.quantity,
                     "price": float(item.product.price * item.quantity),   #convert decimal to float
-                    "image": item.product.image.url if item.product.image else None  
+                    "image": item.product.image   
                 }
                 for item in cart_items
             ]
