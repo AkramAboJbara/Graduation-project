@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import django_filters
 from rest_framework import status, filters, viewsets
 from rest_framework.views import APIView
@@ -297,7 +297,7 @@ class CreateCheckoutSessionAPIView(APIView):
                 "id": checkout_session
         })
 
-
+webhook_key = settings.STRIPE_WEBHOOK_KEY
 class StripeWebhookAPIView(APIView):
     def post(self, request, *args, **kwargs):
         payload = request.body
@@ -305,7 +305,7 @@ class StripeWebhookAPIView(APIView):
         event = None
         try:
             event = stripe.Webhook.construct_event(
-                payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+                payload, sig_header, webhook_key
             )
         except ValueError:
             return Response({"error": "Invalid payload"}, status=400)
@@ -313,5 +313,8 @@ class StripeWebhookAPIView(APIView):
             return Response({"error": "Invalid signature"}, status=400)
         if event["type"] == "checkout.session.completed":
             session = event["data"]["object"]
+            #update database , send email ,anything :)
+            #
+            #
             print(f"✅ Payment succeeded for session {session['id']}")
         return Response({"status": "success"}, status=200)
