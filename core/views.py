@@ -7,6 +7,7 @@ from rest_framework import status
 from django.contrib.auth import authenticate
 
 from django_filters import rest_framework as filters
+import stripe
 
 from .models import *
 from .serializers import * 
@@ -251,7 +252,66 @@ class ViewCartContentApiView(APIView):
     
 class HomepageAPIView(APIView):
     def get(self, request):
-        
         categories = Category.objects.all()
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
+
+
+# Stripe integration
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+class CreateCheckoutSessionAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        try:
+            cart = Cart.objects.get(user=user)
+        except Cart.DoesNotExist:
+            return Response(
+                {"message": "No cart exists for this user."},
+                status=status.HTTP_200_OK
+            )
+        cart_items = CartItem.objects.filter(cart=cart)
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items = [
+                    {   
+                        'price_data': {
+                            'currency': 'usd',
+                            'unit_amount': int(item.product.price * item.quantity * 100),  # Convert to cents
+                            'product_data': {
+                                'name': item.product.name,
+                                "images": [item.product.image] if item.product.image else [],
+                            },
+                        },
+                        'quantity': item.quantity,
+                    }
+                for item in cart_items
+            ],
+            mode='payment',
+            success_url='http://localhost:3000/e-commerce-frontend/about',
+            cancel_url='http://localhost:3000/e-commerce-frontend/about',
+        )
+        print(checkout_session.url)
+        return Response({
+                "id": checkout_session
+        })
+
+
+class StripeWebhookAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        payload = request.body
+        sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
+        event = None
+        try:
+            event = stripe.Webhook.construct_event(
+                payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+            )
+        except ValueError:
+            return Response({"error": "Invalid payload"}, status=400)
+        except stripe.error.SignatureVerificationError:
+            return Response({"error": "Invalid signature"}, status=400)
+        if event["type"] == "checkout.session.completed":
+            session = event["data"]["object"]
+            print(f"✅ Payment succeeded for session {session['id']}")
+        return Response({"status": "success"}, status=200)

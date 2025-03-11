@@ -119,7 +119,7 @@ AUTHENTICATION_BACKENDS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES':
-         ['rest_framework.authentication.TokenAuthentication'],
+        ['rest_framework.authentication.TokenAuthentication'],
     
 
 }
@@ -137,3 +137,6 @@ EMAIL_HOST_USER = 'jaseraburamadan@gmail.com'
 EMAIL_HOST_PASSWORD = 'xiwk mpbx thvs qfkc'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
+STRIPE_PUBLIC_KEY ='pk_test_51QcpDF2Nr0G4DsWGvWHQdeFHYDjIRqDMkeuJMxqsbEWJmvyZs99h9aPSwePszOlymsise2QSBdxYI0z6VCIvE5tj00csMzJHk7'
+STRIPE_SECRET_KEY ='sk_test_51QcpDF2Nr0G4DsWGo2PDTID9jANstyjgTuX7PlkDaZovPxWrk7Fa1qzZkeILYEwpjD17whsvEdAntXgQpsSoWMZM001abR6CnS'
+STRIPE_WEBHOOK_KEY =''
