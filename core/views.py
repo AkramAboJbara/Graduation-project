@@ -1,4 +1,4 @@
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 import django_filters
 from rest_framework import status, filters, viewsets
 from rest_framework.views import APIView
@@ -289,14 +289,17 @@ class CreateCheckoutSessionAPIView(APIView):
                 for item in cart_items
             ],
             mode='payment',
+            metadata={
+                "cart_id": str(cart.id)
+            },
             success_url='http://localhost:3000/e-commerce-frontend/about',
             cancel_url='http://localhost:3000/e-commerce-frontend/about',
         )
-        print(checkout_session.url)
         return Response({
                 "id": checkout_session
         })
-
+        
+#stripe listen --forward-to localhost:8000/api/Stripe_Webhook_APIView/
 webhook_key = settings.STRIPE_WEBHOOK_KEY
 class StripeWebhookAPIView(APIView):
     def post(self, request, *args, **kwargs):
@@ -312,9 +315,13 @@ class StripeWebhookAPIView(APIView):
         except stripe.error.SignatureVerificationError:
             return Response({"error": "Invalid signature"}, status=400)
         if event["type"] == "checkout.session.completed":
+        #update database , send email ,anything :)
             session = event["data"]["object"]
-            #update database , send email ,anything :)
-            #
-            #
+            cart_id = session.get("metadata", {}).get("cart_id")
+            print(cart_id)
+            cart = Cart.objects.get(id=cart_id)
+            CartItem.objects.filter(cart=cart).delete()
+
+
             print(f"✅ Payment succeeded for session {session['id']}")
         return Response({"status": "success"}, status=200)
