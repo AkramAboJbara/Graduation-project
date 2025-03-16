@@ -278,7 +278,7 @@ class CreateCheckoutSessionAPIView(APIView):
                     {   
                         'price_data': {
                             'currency': 'usd',
-                            'unit_amount': int(item.product.price * item.quantity * 100),  # Convert to cents
+                            'unit_amount': int(item.product.price * 100),  # Convert to cents
                             'product_data': {
                                 'name': item.product.name,
                                 "images": [item.product.image] if item.product.image else [],
@@ -292,7 +292,7 @@ class CreateCheckoutSessionAPIView(APIView):
             metadata={
                 "cart_id": str(cart.id)
             },
-            success_url='http://localhost:3000/e-commerce-frontend/about',
+            success_url='http://localhost:3000/e-commerce-frontend/',
             cancel_url='http://localhost:3000/e-commerce-frontend/about',
         )
         return Response({
@@ -321,7 +321,6 @@ class StripeWebhookAPIView(APIView):
             print(cart_id)
             cart = Cart.objects.get(id=cart_id)
             CartItem.objects.filter(cart=cart).delete()
-
 
             print(f"✅ Payment succeeded for session {session['id']}")
         return Response({"status": "success"}, status=200)
