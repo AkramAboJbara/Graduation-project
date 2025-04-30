@@ -20,6 +20,8 @@ from django.utils.decorators import method_decorator
 from rest_framework.permissions import IsAuthenticated
 from decimal import Decimal
 from rest_framework import filters
+from rest_framework.decorators import action
+
 
 
 def homepage(request):
@@ -95,6 +97,12 @@ class viewsets_product(viewsets.ModelViewSet):
             'products': serializer.data
         }, status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=['get'], url_path='top-sales')
+    def top_sales(self, request):
+        top_products = Product.objects.order_by('-sales')[:5]
+        serializer = self.get_serializer(top_products, many=True)
+        return Response(serializer.data)
+
 
 class viewsets_category(viewsets.ModelViewSet):
     queryset = Category.objects.all()
@@ -148,6 +156,7 @@ class AddToCartAPIView(APIView):
 
         # decrease the product stock
         product.stock -= quantity
+        product.sales += quantity
         product.save()
 
         # recalculate the cart total based on all items in the cart
@@ -197,6 +206,7 @@ class RemoveFromCartAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         product.stock += quantity_to_remove # update the product stock
+        product.sales -= quantity_to_remove
         product.save()
         if quantity_to_remove == cart_item.quantity:
             cart_item.delete() # remove the entire item from the cart
