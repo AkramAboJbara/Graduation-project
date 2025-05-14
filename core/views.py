@@ -21,6 +21,9 @@ from rest_framework.permissions import IsAuthenticated
 from decimal import Decimal
 from rest_framework import filters
 from rest_framework.decorators import action
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.core.mail import send_mail
 
 
 
@@ -156,7 +159,6 @@ class AddToCartAPIView(APIView):
 
         # decrease the product stock
         product.stock -= quantity
-        product.sales += quantity
         product.save()
 
         # recalculate the cart total based on all items in the cart
@@ -206,7 +208,6 @@ class RemoveFromCartAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         product.stock += quantity_to_remove # update the product stock
-        product.sales -= quantity_to_remove
         product.save()
         if quantity_to_remove == cart_item.quantity:
             cart_item.delete() # remove the entire item from the cart
@@ -300,7 +301,8 @@ class CreateCheckoutSessionAPIView(APIView):
             ],
             mode='payment',
             metadata={
-                "cart_id": str(cart.id)
+                "cart_id": str(cart.id),
+                "user_id": str(user.id)
             },
             success_url='http://localhost:3000/e-commerce-frontend/',
             cancel_url='http://localhost:3000/e-commerce-frontend/about',
@@ -328,9 +330,34 @@ class StripeWebhookAPIView(APIView):
         #update database , send email ,anything :)
             session = event["data"]["object"]
             cart_id = session.get("metadata", {}).get("cart_id")
-            print(cart_id)
+            user_id = session.get("metadata", {}).get("user_id")
             cart = Cart.objects.get(id=cart_id)
-            CartItem.objects.filter(cart=cart).delete()
+            user = User.objects.get(id=user_id)
+            cart_items = CartItem.objects.filter(cart=cart)
+            
+            # Send email
+            context = {
+                'user': user.first_name,
+                'cart': cart,
+                'cart_items': cart_items,
+                'total': cart.total,
+            }
 
+            html_message = render_to_string('receipt.html', context)
+            plain_message = strip_tags(html_message)
+
+            send_mail(
+                subject="Your Purchase Receipt",
+                message=plain_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                html_message=html_message
+            )
+            
+            for item in cart_items:
+                item.product.sales += item.quantity
+                item.product.save()
+                item.delete()
+            
             print(f"✅ Payment succeeded for session {session['id']}")
         return Response({"status": "success"}, status=200)
