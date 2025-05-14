@@ -130,11 +130,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'core.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  
+EMAIL_HOST = 'in-v3.mailjet.com'  
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'jaseraburamadan@gmail.com'  
-EMAIL_HOST_PASSWORD = 'xiwk mpbx thvs qfkc'
+EMAIL_HOST_USER = '6452297de9d3ab192c4b8d643487412a'  
+EMAIL_HOST_PASSWORD = '9c18073363ee23891343ad327e141fa8'
+DEFAULT_FROM_EMAIL = 'abomoh975@gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 STRIPE_PUBLIC_KEY ='pk_test_51QcpDF2Nr0G4DsWGvWHQdeFHYDjIRqDMkeuJMxqsbEWJmvyZs99h9aPSwePszOlymsise2QSBdxYI0z6VCIvE5tj00csMzJHk7'
