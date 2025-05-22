@@ -1,0 +1,158 @@
+{% extends 'partials/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-primary">Dashboard</h2>
+        <p class="text-muted">Visual overview of product stock distribution</p>
+    </div>
+
+    <!-- Section: General Statistics -->
+    <section id="general" class="mb-5">
+        <h4 class="mb-3">📊 General Statistics</h4>
+        <div class="row text-center g-4">
+            <div class="col-md-3">
+                <div class="card shadow-sm p-3 rounded-3 bg-light">
+                    <h6 class="text-muted">Total Products</h6>
+                    <h3 class="text-primary">{{ total_products }}</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm p-3 rounded-3 bg-light">
+                    <h6 class="text-muted">Total Stock</h6>
+                    <h3 class="text-success">{{ total_stock }}</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm p-3 rounded-3 bg-light">
+                    <h6 class="text-muted">Out of Stock</h6>
+                    <h3 class="text-danger">{{ out_of_stock }}</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm p-3 rounded-3 bg-light">
+                    <h6 class="text-muted">Top Product</h6>
+                    {% if top_product %}
+                        <h5>{{ top_product.name }}</h5>
+                        <span class="small text-muted">({{ top_product.stock }} units)</span>
+                    {% else %}
+                        <span class="text-muted">No data</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Section: Chart Area -->
+    <section id="charts">
+        <h4 class="mb-3">📈 Stock Chart</h4>
+
+        <!-- Toggle Button -->
+        <div class="text-end mb-3">
+            <button class="btn btn-outline-primary" onclick="toggleChart()">Switch Chart</button>
+        </div>
+
+        <!-- Charts -->
+        <div class="card shadow-sm p-4">
+            <canvas id="barChart" height="300"></canvas>
+            <canvas id="pieChart" height="300" style="display: none;"></canvas>
+        </div>
+    </section>
+</div>
+
+<!-- Chart.js Scripts -->
+<script>
+    const labels = [{% for product in products %} '{{ product.name }}', {% endfor %}];
+    const dataValues = [{% for product in products %} {{ product.stock }}, {% endfor %}];
+
+    const backgroundColors = [
+        'rgba(255, 99, 132, 0.8)',
+        'rgba(54, 162, 235, 0.8)',
+        'rgba(255, 206, 86, 0.8)',
+        'rgba(75, 192, 192, 0.8)',
+        'rgba(153, 102, 255, 0.8)',
+        'rgba(255, 159, 64, 0.8)',
+        'rgba(240, 120, 50, 0.8)',
+    ];
+
+    const borderColors = [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)',
+        'rgba(240, 120, 50, 1)',
+    ];
+
+    // Bar Chart
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    const barChart = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '# of Products',
+                data: dataValues,
+                backgroundColor: backgroundColors,
+                borderColor: borderColors,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#6c757d',
+                        font: { size: 14 }
+                    }
+                }
+            }
+        }
+    });
+
+    // Pie Chart
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+    const pieChart = new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: dataValues,
+                backgroundColor: backgroundColors,
+                borderColor: borderColors,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Toggle function
+    function toggleChart() {
+        const pie = document.getElementById('pieChart');
+        const bar = document.getElementById('barChart');
+        if (pie.style.display === 'none') {
+            pie.style.display = 'block';
+            bar.style.display = 'none';
+        } else {
+            pie.style.display = 'none';
+            bar.style.display = 'block';
+        }
+    }
+</script>
+{% endblock %}
