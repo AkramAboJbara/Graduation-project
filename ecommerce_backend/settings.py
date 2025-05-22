@@ -28,6 +28,7 @@ CORS_ALLOWED_ORIGINS = [
 
 
 INSTALLED_APPS = [
+    'django_light',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'core',
     'accounts',
+    'chartapp.apps.ChartappConfig',
     
 ]
 
