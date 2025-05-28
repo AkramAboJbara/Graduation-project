@@ -22,4 +22,5 @@ urlpatterns = [
     path('api/', include('core.urls')),
     path('', include('accounts.urls')),
     path('', include('chartapp.urls')),
+    path('admin_tools_stats/', include('admin_tools_stats.urls')),
 ]

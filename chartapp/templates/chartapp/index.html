@@ -7,33 +7,33 @@
         <p class="text-muted">Visual overview of product stock distribution</p>
     </div>
 
-    <!-- Section: General Statistics -->
-    <section id="general" class="mb-5">
-        <h4 class="mb-3">📊 General Statistics</h4>
+    <!-- Section: Products Stock -->
+    <section id="products_stock" class="mb-5">
+        <h4 class="mb-3">📊 Products Stock</h4>
         <div class="row text-center g-4">
             <div class="col-md-3">
-                <div class="card shadow-sm p-3 rounded-3 bg-light">
+                <div class="card h-100 shadow-sm p-3 rounded-3 bg-light">
                     <h6 class="text-muted">Total Products</h6>
                     <h3 class="text-primary">{{ total_products }}</h3>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card shadow-sm p-3 rounded-3 bg-light">
+                <div class="card h-100 shadow-sm p-3 rounded-3 bg-light">
                     <h6 class="text-muted">Total Stock</h6>
                     <h3 class="text-success">{{ total_stock }}</h3>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card shadow-sm p-3 rounded-3 bg-light">
+                <div class="card h-100 shadow-sm p-3 rounded-3 bg-light">
                     <h6 class="text-muted">Out of Stock</h6>
                     <h3 class="text-danger">{{ out_of_stock }}</h3>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card shadow-sm p-3 rounded-3 bg-light">
+                <div class="card h-100 shadow-sm p-3 rounded-3 bg-light d-flex flex-column justify-content-center">
                     <h6 class="text-muted">Top Product</h6>
                     {% if top_product %}
-                        <h5>{{ top_product.name }}</h5>
+                        <h5 class="mb-0">{{ top_product.name }}</h5>
                         <span class="small text-muted">({{ top_product.stock }} units)</span>
                     {% else %}
                         <span class="text-muted">No data</span>
@@ -42,21 +42,95 @@
             </div>
         </div>
     </section>
-    
-    <!-- Section: Chart Area -->
-    <section id="charts">
-        <h4 class="mb-3">📈 Stock Chart</h4>
 
-        <!-- Toggle Button -->
+    <!-- Section: Category Products -->
+    <section id="category_products" class="mb-5" style="display: none;">
+        <h4 class="mb-3">📊 Category Products</h4>
+
+        <!-- Summary cards -->
+        <div class="row text-center g-4 mb-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm p-3 rounded-3 bg-light">
+                    <h6 class="text-muted">Total Products (in Categories)</h6>
+                    <h3 class="text-primary">{{ category_total }}</h3>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm p-3 rounded-3 bg-light">
+                    <h6 class="text-muted">Number of Categories</h6>
+                    <h3 class="text-success">{{ category_names_count }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Toggle -->
         <div class="text-end mb-3">
-            <button class="btn btn-outline-primary" onclick="toggleChart()">Switch Chart</button>
+            <button class="btn btn-outline-primary" onclick="toggleCategoryChart()">Switch Chart</button>
         </div>
 
         <!-- Charts -->
         <div class="card shadow-sm p-4">
-            <canvas id="barChart" height="300"></canvas>
-            <canvas id="pieChart" height="300" style="display: none;"></canvas>
+            <div style="position: relative; width: 100%; max-width: 100%;">
+                <canvas id="categoryBarChart"></canvas>
+                <div style="position: relative; width: 100%; max-width: 100%; height: 500px;">
+                    <canvas id="categoryPieChart" style="display: none;"></canvas>
+                </div>
+            </div>
         </div>
+    </section>
+
+     <section id="top_selling_section" class="mb-5" style="display: none;">
+        <h4 class="mb-3">🔥 Top Selling Products</h4>
+        <div class="row text-center g-4 mb-4">
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm p-3 rounded-3 bg-light d-flex flex-column justify-content-center">
+                    <h6 class="text-muted">Total Sales</h6>
+                    <h3 class="text-primary">{{ total_sales }}</h3>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm p-3 rounded-3 bg-light d-flex flex-column justify-content-center">
+                    <h6 class="text-muted">Top Product</h6>
+                    {% if top_selling.0 %}
+                        <h5>{{ top_selling.0.name }}</h5>
+                        <span class="small text-muted">({{ top_selling.0.sales }} sales)</span>
+                    {% else %}
+                        <span class="text-muted">No data</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="text-end mb-3">
+            <button class="btn btn-outline-primary" onclick="toggleTopChart()">Switch Chart</button>
+        </div>
+
+        <div class="card shadow-sm p-4">
+            <div style="position: relative; width: 100%; max-width: 100%;">
+                <canvas id="topBarChart"></canvas>
+                <div style="position: relative; width: 100%; max-width: 100%; height: 400px;">
+                    <canvas id="topPieChart" style="display: none;"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Section: Charts -->
+    <section id="charts" class="mb-5">
+        <h4 class="mb-3">📈 Stock Chart</h4>
+        <div class="text-end mb-3">
+            <button class="btn btn-outline-primary" onclick="toggleChart()">Switch Chart</button>
+        </div>
+        <div class="card shadow-sm p-4">
+            <div style="position: relative; width: 100%; max-width: 100%;">
+                <canvas id="barChart"></canvas>
+                <div style="position: relative; width: 100%; max-width: 100%; height: 600px;">
+                    <canvas id="pieChart" style="display: none;"></canvas>
+                </div>
+            </div>
+        </div>
+
     </section>
 </div>
 
@@ -134,6 +208,8 @@
             }]
         },
         options: {
+            responsive: true,               
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'bottom'
@@ -142,17 +218,208 @@
         }
     });
 
-    // Toggle function
+    // Toggle between pie and bar chart
     function toggleChart() {
         const pie = document.getElementById('pieChart');
         const bar = document.getElementById('barChart');
-        if (pie.style.display === 'none') {
-            pie.style.display = 'block';
-            bar.style.display = 'none';
-        } else {
-            pie.style.display = 'none';
-            bar.style.display = 'block';
+        pie.style.display = (pie.style.display === 'none') ? 'block' : 'none';
+        bar.style.display = (bar.style.display === 'none') ? 'block' : 'none';
+    }
+
+    // Section switching logic
+    function showSection(sectionId) {
+        const productSection = document.getElementById('products_stock');
+        const categorySection = document.getElementById('category_products');
+        const chartSection = document.getElementById('charts');
+        const topSellingSection = document.getElementById('top_selling_section');
+
+        productSection && (productSection.style.display = 'none');
+        categorySection && (categorySection.style.display = 'none');
+        chartSection && (chartSection.style.display = 'none');
+        topSellingSection && (topSellingSection.style.display = 'none');
+
+        if (sectionId === 'products_stock') {
+            productSection && (productSection.style.display = 'block');
+            chartSection && (chartSection.style.display = 'block');
+        } else if (sectionId === 'category_products') {
+            categorySection && (categorySection.style.display = 'block');
+        } else if (sectionId === 'top_selling_section') {
+            topSellingSection && (topSellingSection.style.display = 'block');
         }
     }
+</script>
+
+<script>
+    const catLabels = [{% for item in category_counts %}'{{ item.category__name }}',{% endfor %}];
+    const catData = [{% for item in category_counts %}{{ item.total }},{% endfor %}];
+
+    const catBackgroundColors = [
+        'rgba(255, 99, 132, 0.8)',
+        'rgba(54, 162, 235, 0.8)',
+        'rgba(255, 206, 86, 0.8)',
+        'rgba(75, 192, 192, 0.8)',
+        'rgba(153, 102, 255, 0.8)',
+        'rgba(255, 159, 64, 0.8)',
+        'rgba(240, 120, 50, 0.8)'
+    ];
+
+    const catBorderColors = [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)',
+        'rgba(240, 120, 50, 1)'
+    ];
+
+    // Category Bar Chart
+    const catBarCtx = document.getElementById('categoryBarChart').getContext('2d');
+    const categoryBarChart = new Chart(catBarCtx, {
+        type: 'bar',
+        data: {
+            labels: catLabels,
+            datasets: [{
+                label: '# Products per Category',
+                data: catData,
+                backgroundColor: catBackgroundColors,
+                borderColor: catBorderColors,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    // Category Pie Chart
+    const catPieCtx = document.getElementById('categoryPieChart').getContext('2d');
+    const categoryPieChart = new Chart(catPieCtx, {
+        type: 'pie',
+        data: {
+            labels: catLabels,
+            datasets: [{
+                data: catData,
+                backgroundColor: catBackgroundColors,
+                borderColor: catBorderColors,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,               
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Toggle between bar and pie
+    function toggleCategoryChart() {
+        const pie = document.getElementById('categoryPieChart');
+        const bar = document.getElementById('categoryBarChart');
+        pie.style.display = (pie.style.display === 'none') ? 'block' : 'none';
+        bar.style.display = (bar.style.display === 'none') ? 'block' : 'none';
+    }
+</script>
+<script>
+    const topLabels = [{% for product in top_selling %}'{{ product.name }}',{% endfor %}];
+    const topSales = [{% for product in top_selling %}{{ product.sales }},{% endfor %}];
+
+    const topColors = [
+        'rgba(255, 99, 132, 0.8)',
+        'rgba(54, 162, 235, 0.8)',
+        'rgba(255, 206, 86, 0.8)',
+        'rgba(75, 192, 192, 0.8)',
+        'rgba(153, 102, 255, 0.8)'
+    ];
+    const topBorders = [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)'
+    ];
+
+    const topBarCtx = document.getElementById('topBarChart').getContext('2d');
+    const topBarChart = new Chart(topBarCtx, {
+        type: 'bar',
+        data: {
+            labels: topLabels,
+            datasets: [{
+                label: 'Sales',
+                data: topSales,
+                backgroundColor: topColors,
+                borderColor: topBorders,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    const topPieCtx = document.getElementById('topPieChart').getContext('2d');
+    const topPieChart = new Chart(topPieCtx, {
+        type: 'pie',
+        data: {
+            labels: topLabels,
+            datasets: [{
+                data: topSales,
+                backgroundColor: topColors,
+                borderColor: topBorders,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    function toggleTopChart() {
+        const pie = document.getElementById('topPieChart');
+        const bar = document.getElementById('topBarChart');
+        pie.style.display = (pie.style.display === 'none') ? 'block' : 'none';
+        bar.style.display = (bar.style.display === 'none') ? 'block' : 'none';
+    }
+</script>
+<script>
+  function setActive(element) {
+    document.querySelectorAll('.navbar .nav-link').forEach(link => {
+      link.classList.remove('active');
+    });
+    element.classList.add('active');
+  }
 </script>
 {% endblock %}
