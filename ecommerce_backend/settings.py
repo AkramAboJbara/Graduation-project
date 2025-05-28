@@ -28,6 +28,8 @@ CORS_ALLOWED_ORIGINS = [
 
 
 INSTALLED_APPS = [
+    'admin_tools_stats',
+    'django_nvd3',
     'django_light',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -79,25 +81,18 @@ WSGI_APPLICATION = 'ecommerce_backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': 'FpCfXUjlGbHAEWcfrMnBjZyIjKtPvtec',
-        'HOST': 'viaduct.proxy.rlwy.net',
-        'PORT': '36101',
+        'ENGINE': 'django.db.backends.postgresql',      
+        'NAME': 'neondb',                                                         # Replace with your database name
+        'USER': 'neondb_owner',                                                        # Replace with your PostgreSQL username
+        'PASSWORD': 'npg_YtVWT2RCAxE8',                                                 # Replace with your PostgreSQL password
+        'HOST': 'ep-delicate-tooth-a2ldr12j.eu-central-1.aws.neon.tech',               # Use 'localhost' for local PostgreSQL server
+        'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'require',
+            'options': '-c search_path=public'
+            },
     }
 }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'master_db', 
-#         'USER': 'postgres',  
-#         'PASSWORD': 'Admin', 
-#         'HOST': 'localhost', 
-#         'PORT': '5432',      
-#     }
-# }
 
 
 
