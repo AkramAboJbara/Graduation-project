@@ -11,8 +11,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
+from decouple import config
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+KLUSTER_API_KEY = config("KLUSTER_API_KEY")
 
 SECRET_KEY = 'django-insecure-7!90f&(_e4=8hkd&8)&3pc!l_mmxl7$8mbvejy$m&d^())#4wj'
 
@@ -43,6 +47,7 @@ INSTALLED_APPS = [
     'core',
     'accounts',
     'chartapp.apps.ChartappConfig',
+    'chatbot',
     
 ]
 
