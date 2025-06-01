@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'accounts',
     'chartapp.apps.ChartappConfig',
     'chatbot',
-    
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -132,9 +132,16 @@ AUTHENTICATION_BACKENDS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES':
         ['rest_framework.authentication.TokenAuthentication'],
+     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',    
     
 
 }
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Your API Docs',
+    'DESCRIPTION': 'Automated Swagger docs for Django REST Framework',
+    'VERSION': '1.0.0',
+}
+
 STATIC_URL = 'static/'
 
 
