@@ -47,7 +47,7 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0.0, help_text="Discount percentage (e.g., 10 for 10%)")
     sales = models.PositiveIntegerField(default=0, help_text="Number of units sold")
-    
+    date_sold = models.DateTimeField(null=True, blank=True)
     def __str__(self):
         return self.name
 
