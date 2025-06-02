@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Summary</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"  rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"  rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 60px;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #343a40;
+        }
+
+        /* Download Links */
+        .download-links a {
+            margin-right: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .download-links a:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Summary Cards */
+        .summary-card {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease-in-out forwards;
+        }
+
+        .summary-card h3 {
+            margin-bottom: 10px;
+            color: #0d6efd;
+        }
+
+        .summary-card p {
+            font-size: 18px;
+            color: #333;
+        }
+
+        /* Animation for Cards */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hover Effect for Cards */
+        .summary-card:hover {
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+            transition: box-shadow 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sales Summary</h1>
+
+        <!-- Weekly Sales -->
+        <div class="summary-card" style="animation-delay: 0.2s;">
+            <h3><i class="fas fa-calendar-week me-2"></i>Weekly Sales</h3>
+            <p>Total products sold in the last week: <strong>{{ weekly_sales }}</strong></p>
+            <div class="download-links mt-3">
+                <a href="{% url 'export_weekly_sales_csv' %}" class="btn btn-success">
+                    <i class="fas fa-file-csv"></i> Download as CSV
+                </a>
+                <a href="{% url 'export_weekly_sales_pdf' %}" class="btn btn-danger">
+                    <i class="fas fa-file-pdf"></i> Download as PDF
+                </a>
+            </div>
+        </div>
+
+        <!-- Monthly Sales -->
+        <div class="summary-card" style="animation-delay: 0.4s;">
+            <h3><i class="fas fa-calendar-alt me-2"></i>Monthly Sales</h3>
+            <p>Total products sold in the last month: <strong>{{ monthly_sales }}</strong></p>
+            <div class="download-links mt-3">
+                <a href="{% url 'export_monthly_sales_csv' %}" class="btn btn-success">
+                    <i class="fas fa-file-csv"></i> Download as CSV
+                </a>
+                <a href="{% url 'export_monthly_sales_pdf' %}" class="btn btn-danger">
+                    <i class="fas fa-file-pdf"></i> Download as PDF
+                </a>
+            </div>
+        </div>
+
+        <!-- Annual Sales -->
+        <div class="summary-card" style="animation-delay: 0.6s;">
+            <h3><i class="fas fa-calendar-check me-2"></i>Annual Sales</h3>
+            <p>Total products sold in the last year: <strong>{{ annual_sales }}</strong></p>
+            <div class="download-links mt-3">
+                <a href="{% url 'export_annual_sales_csv' %}" class="btn btn-success">
+                    <i class="fas fa-file-csv"></i> Download as CSV
+                </a>
+                <a href="{% url 'export_annual_sales_pdf' %}" class="btn btn-danger">
+                    <i class="fas fa-file-pdf"></i> Download as PDF
+                </a>
+            </div>
+        </div>
+
+        <!-- Forever Sales -->
+        <div class="summary-card" style="animation-delay: 0.8s;">
+            <h3><i class="fas fa-infinity me-2"></i>Forever Sales</h3>
+            <p>Total products sold since the beginning: <strong>{{ total_sales }}</strong></p>
+            <div class="download-links mt-3">
+                <a href="{% url 'export_forever_sales_csv' %}" class="btn btn-success">
+                    <i class="fas fa-file-csv"></i> Download as CSV
+                </a>
+                <a href="{% url 'export_forever_sales_pdf' %}" class="btn btn-danger">
+                    <i class="fas fa-file-pdf"></i> Download as PDF
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (Optional for interactivity) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script> 
+</body>
+</html>

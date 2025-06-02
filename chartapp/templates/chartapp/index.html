@@ -2,9 +2,14 @@
 
 {% block content %}
 <div class="container mt-4">
+    
     <div class="text-center mb-4">
         <h2 class="fw-bold text-primary">Dashboard</h2>
         <p class="text-muted">Visual overview of product stock distribution</p>
+<div class="nav-container">
+  <a href="dashboard-info/Product_List" class="nav-button row text-center">View Product List</a>
+  <a href="dashboard-info/sales-summary" class="nav-button">View Sales Summary</a>
+</div>
     </div>
 
     <!-- Section: Products Stock -->
@@ -422,4 +427,75 @@
     element.classList.add('active');
   }
 </script>
+<style>
+  .nav-container {
+    display: flex;
+    gap: 15px;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .nav-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    min-width: 180px;
+    text-align: center;
+  }
+  
+  /* First button style */
+  .nav-button:nth-child(1) {
+    background-color: #4e73df;
+    color: white;
+    border: 2px solid #4e73df;
+  }
+  
+  /* Second button style */
+  .nav-button:nth-child(2) {
+    background-color: #1cc88a;
+    color: white;
+    border: 2px solid #1cc88a;
+  }
+  
+  /* Hover effects */
+  .nav-button:nth-child(1):hover {
+    background-color: #2e59d9;
+    border-color: #2e59d9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+  
+  .nav-button:nth-child(2):hover {
+    background-color: #17a673;
+    border-color: #17a673;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+  
+  /* Optional: Add icons */
+  .nav-button::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+  
+  .nav-button:nth-child(1)::before {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSJ3aGl0ZSIgZD0iTTQwMCA0NDhIMTI4Yy0zNS4zIDAtNjQtMjguNy02NC02NFY2NGMwLTM1LjMgMjguNy02NCA2NC02NGgyMjQuMUwxODggMTk2LjJjLTkuOCA5LjgtOS44IDI1LjcgMCAzNS41bDE3My44IDE3My44YzkuOCA5LjggMjUuNyA5LjggMzUuNSAwTDQ4MCAyNzkuOVYzODRjMCAzNS4zLTI4LjcgNjQtNjQgNjR6Ii8+PC9zdmc+');
+  }
+  
+  .nav-button:nth-child(2)::before {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSJ3aGl0ZSIgZD0iTTQwOCAxMjhoLTk2VjMyYzAtMTcuNy0xNC4zLTMyLTMyLTMyaC0xNjBjLTE3LjcgMC0zMiAxNC4zLTMyIDMydjk2SDk2Yy0xNy43IDAtMzIgMTQuMy0zMiAzMnYxNjBjMCAxNy43IDE0LjMgMzIgMzIgMzJoOTZ2OTZjMCAxNy43IDE0LjMgMzIgMzIgMzJoMTYwYzE3LjcgMCAzMi0xNC4zIDMyLTMydi05Nmg5NmMxNy43IDAgMzItMTQuMyAzMi0zMlYxNjBjMC0xNy43LTE0LjMtMzItMzItMzJ6Ii8+PC9zdmc+');
+  }
+</style>
 {% endblock %}

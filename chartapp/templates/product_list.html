@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"  rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 60px;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        /* Header Styling */
+        h1 {
+            color: #343a40;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Download Links */
+        .download-links {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .download-links a {
+            color: #0d6efd;
+            margin-right: 10px;
+            transition: color 0.3s ease;
+        }
+        .download-links a:hover {
+            color: #0a58ca;
+        }
+
+        /* Filter Form */
+        .filter-form {
+            margin-bottom: 20px;
+        }
+        .filter-form label {
+            font-weight: bold;
+        }
+        .filter-form select {
+            width: 200px;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .filter-form button {
+            padding: 8px 16px;
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .filter-form button:hover {
+            background-color: #0a58ca;
+        }
+
+        /* Product Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #e9ecef;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Stock Alert Styling */
+        .stock-alert {
+            color: red;
+            font-weight: bold;
+        }
+
+        /* Animation for Table Rows */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        tbody tr {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <h1>Product List</h1>
+
+        <!-- Download Links -->
+        <div class="download-links">
+            <a href="{% url 'export_csv' %}">Download as CSV</a> |
+            <a href="{% url 'export_pdf' %}">Download as PDF</a>
+        </div>
+
+        <!-- Filter by Category -->
+        <form class="filter-form" method="GET">
+            <label for="category">Filter by Category:</label>
+            <select name="category" id="category">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}" {% if category.id == request.GET.category %}selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Filter</button>
+        </form>
+
+        <!-- Product Table -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Product Name</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Sales</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td>{{ product.category.name }}</td>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.price }}</td>
+                        <td>
+                            {% if product.stock <= 20 %}
+                                <span class="stock-alert">{{ product.stock }}</span>
+                            {% else %}
+                                {{ product.stock }}
+                            {% endif %}
+                        </td>
+                        <td>{{ product.sales }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5" class="text-center">No products found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bootstrap JS (Optional for interactivity) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script> 
+</body>
+</html>
