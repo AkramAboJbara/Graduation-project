@@ -300,6 +300,7 @@ class CreateCheckoutSessionAPIView(APIView):
                 for item in cart_items
             ],
             mode='payment',
+            customer_email=user.email,
             metadata={
                 "cart_id": str(cart.id),
                 "user_id": str(user.id)
