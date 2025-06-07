@@ -1,4 +1,6 @@
 from django.contrib import admin
+
+from chatbot.models import Review
 from .models import User, Category, Product, Cart, CartItem, Order, OrderItem
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
@@ -10,7 +12,7 @@ class CustomUserAdmin(UserAdmin):
         (None, {'fields': ('phone_number', 'address')}),
     )
     
-
+admin.site.register(Review)
 
 class PriceRangeFilter(admin.SimpleListFilter):
     title = 'Price Range'
