@@ -334,7 +334,7 @@ class StripeWebhookAPIView(APIView):
             cart = Cart.objects.get(id=cart_id)
             user = User.objects.get(id=user_id)
             cart_items = CartItem.objects.filter(cart=cart)
-            
+            create_order_from_cart(user)
             # Send email
             context = {
                 'user': user.first_name,
@@ -353,11 +353,43 @@ class StripeWebhookAPIView(APIView):
                 recipient_list=[user.email],
                 html_message=html_message
             )
-            
-            for item in cart_items:
-                item.product.sales += item.quantity
-                item.product.save()
-                item.delete()
-            
-            print(f"✅ Payment succeeded for session {session['id']}")
         return Response({"status": "success"}, status=200)
+
+def create_order_from_cart(user):
+    cart = Cart.objects.filter(user=user).first()
+    if not cart or not cart.items.exists():
+        raise ValueError("Cart is empty")
+
+    # Optional: validate stock availability
+    for item in cart.items.all():
+        if item.product.stock < item.quantity:
+            raise ValueError(f"Not enough stock for {item.product.name}")
+
+    # Create the order
+    order = Order.objects.create(
+        user=user,
+        full_name=user.get_full_name(),
+        email=user.email,
+        address=user.address,
+        total_amount=cart.total,
+        created_at=timezone.now(),
+        status='Pending'
+    )
+
+    # Create order items
+    for item in cart.items.all():
+        OrderItem.objects.create(
+            order=order,
+            product=item.product,
+            quantity=item.quantity,
+            price=item.product.price * Decimal(item.quantity)
+        )
+        item.product.sales += item.quantity
+        item.product.date_sold = timezone.now()
+        item.product.save()
+
+    cart.items.all().delete()
+    cart.total = 0
+    cart.save()
+
+    return order
