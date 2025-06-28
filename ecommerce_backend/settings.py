@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from decouple import config
 
-from decouple import config
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 KLUSTER_API_KEY = config("KLUSTER_API_KEY")

@@ -1,0 +1,194 @@
+<!-- templates/chatbot/review.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Leave a Review</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to right, #e0ecff, #f7f9fc); 
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    .container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .review-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      width: 100%;
+      max-width: 550px;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 24px;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    input[type="email"],
+    textarea {
+      width: 100%;
+      padding: 12px 15px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #007bff;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+    }
+
+    .rating {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      justify-content: center;
+    }
+
+    .rating input {
+      display: none;
+    }
+
+    .rating label {
+      font-size: 28px;
+      color: #ddd;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .rating input:checked ~ label,
+    .rating input:checked + label,
+    .rating label:hover,
+    .rating label:hover ~ label {
+      color: gold;
+    }
+
+    button {
+      margin-top: 25px;
+      width: 100%;
+      padding: 14px;
+      background-color: #007bff;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .success-message {
+      text-align: center;
+      padding: 30px;
+      font-size: 18px;
+      color: #28a745;
+      display: none;
+    }
+
+    @media (max-width: 500px) {
+      .review-card {
+        padding: 25px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      .rating label {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="review-card">
+    <h2>We'd Love to Hear From You!</h2>
+    <form id="reviewForm" method="post" action="{% url 'submit_review' %}">
+      {% csrf_token %}
+      
+      <label for="email">Your Email</label>
+      <input type="email" id="email" name="email" required placeholder="you@example.com">
+
+      <label for="message">Your Feedback</label>
+      <textarea id="message" name="message" rows="5" required placeholder="Tell us about your experience..."></textarea>
+
+      <label>Your Rating</label>
+      <div class="rating">
+        <input type="radio" id="star5" name="rating" value="5" required><label for="star5">&#9733;</label>
+        <input type="radio" id="star4" name="rating" value="4"><label for="star4">&#9733;</label>
+        <input type="radio" id="star3" name="rating" value="3"><label for="star3">&#9733;</label>
+        <input type="radio" id="star2" name="rating" value="2"><label for="star2">&#9733;</label>
+        <input type="radio" id="star1" name="rating" value="1"><label for="star1">&#9733;</label>
+      </div>
+
+      <button type="submit">Submit Review</button>
+    </form>
+  </div>
+
+  <!-- Success Message -->
+  <div id="successMessage" class="success-message">
+    ✅ Thank you for your review! We appreciate your feedback.
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('reviewForm');
+    const card = document.querySelector('.review-card');
+    const successMessage = document.getElementById('successMessage');
+
+    form.addEventListener('submit', function () {
+      setTimeout(() => {
+        card.style.display = 'none';
+        successMessage.style.display = 'block';
+      }, 500);
+    });
+  });
+</script>
+
+</body>
+</html>
