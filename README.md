@@ -72,6 +72,6 @@ venv\Scripts\activate
 ```
 ### 2. Run Django Project
 ```bash
-    python manage.py runserver
+python manage.py runserver
 ```
 
