@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate
 
 from django_filters import rest_framework as filters
 import stripe
+from django.utils import timezone
 
 from .models import *
 from .serializers import * 
@@ -335,7 +336,7 @@ class StripeWebhookAPIView(APIView):
             cart = Cart.objects.get(id=cart_id)
             user = User.objects.get(id=user_id)
             cart_items = CartItem.objects.filter(cart=cart)
-            create_order_from_cart(user)
+            
             # Send email
             context = {
                 'user': user.first_name,
@@ -354,6 +355,7 @@ class StripeWebhookAPIView(APIView):
                 recipient_list=[user.email],
                 html_message=html_message
             )
+            create_order_from_cart(user)
         return Response({"status": "success"}, status=200)
 
 def create_order_from_cart(user):
@@ -394,3 +396,16 @@ def create_order_from_cart(user):
     cart.save()
 
     return order
+
+class UserProfileAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        user_data = UserSerializer(user).data
+        orders = Order.objects.filter(user=user).order_by('-created_at')
+        orders_data = OrderSerializer(orders, many=True).data
+        return Response({
+            'user': user_data,
+            'orders': orders_data
+        }, status=status.HTTP_200_OK)
