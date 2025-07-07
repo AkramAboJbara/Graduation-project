@@ -19,5 +19,6 @@ urlpatterns = [
     path('view_cart/', ViewCartContentApiView.as_view(), name='view_cart'),
     path('create_checkout_session/', CreateCheckoutSessionAPIView.as_view(), name='create_checkout_session'),
     path('Stripe_Webhook_APIView/', StripeWebhookAPIView.as_view(), name='Stripe_Webhook_APIView'),
+    path('profile/', UserProfileAPIView.as_view(), name='user-profile'),
 
 ]
