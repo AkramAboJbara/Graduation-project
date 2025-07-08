@@ -27,51 +27,6 @@ from django.utils.html import strip_tags
 from django.core.mail import send_mail
 
 
-
-def homepage(request):
-    return JsonResponse({"message": "Welcome to the E-commerce Backend API!"})
-
-"""
-class HomepageProductAPIView(APIView):
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['name']
-
-    def get(self, request):
-        products = Product.objects.all()
-        if 'search' in request.query_params:
-            search_term = request.query_params['search']
-            products = products.filter(name__icontains=search_term)
-        if 'category' in request.query_params:
-            category = request.query_params['category']
-            products = products.filter(category__icontains=category)
-        if 'price_min' in request.query_params:
-            price_min = request.query_params['price_min']
-            products = products.filter(price__gte=price_min)
-        if 'price_max' in request.query_params:
-            price_max = request.query_params['price_max']
-            products = products.filter(price__lte=price_max)
-        page = request.GET.get('page', 1) 
-        paginator = Paginator(products, 20)
-        try:
-            paginated_products = paginator.page(page)
-        except PageNotAnInteger:
-            paginated_products = paginator.page(1)  
-        except EmptyPage:
-            paginated_products = paginator.page(paginator.num_pages) 
-
-        serializer = ProductSerializer(paginated_products, many=True)
-
-        return Response({
-            'total_pages': paginator.num_pages,
-            'current_page': paginated_products.number,
-            'products': serializer.data
-        }, status=status.HTTP_200_OK)
-
-    def filter_queryset(self, queryset):
-        search_filter = filters.SearchFilter()
-        return search_filter.filter_queryset(self.request, queryset, self)
-"""
-
 authentication_classes = [TokenAuthentication]    
 
 class viewsets_product(viewsets.ModelViewSet):
