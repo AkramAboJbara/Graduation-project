@@ -10,8 +10,6 @@ router.register('category', viewsets_category)
 
 urlpatterns = [
     path('homepage/', HomepageAPIView.as_view(), name='homepage'),
-    path('', homepage, name='homepage'),
-    # path('home/products/', HomepageProductAPIView.as_view(), name='homepage-products'),
     path('category/', include(router.urls)),
     path('product/', include(router.urls)),
     path('add_to_cart/', AddToCartAPIView.as_view(), name='add-to-cart'),
