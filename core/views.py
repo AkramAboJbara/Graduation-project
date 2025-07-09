@@ -25,7 +25,7 @@ from rest_framework.decorators import action
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import send_mail
-
+from django.shortcuts import render, get_object_or_404, redirect
 
 authentication_classes = [TokenAuthentication]    
 
@@ -351,3 +351,19 @@ class UserProfileAPIView(APIView):
             'user': user_data,
             'orders': orders_data
         }, status=status.HTTP_200_OK)
+
+
+def manage_orders_view(request):
+    orders = Order.objects.all().order_by('-created_at')
+    return render(request, 'orders/manage_orders.html', {'orders': orders})
+
+def update_order_status(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        if new_status in dict(Order._meta.get_field('status').choices):
+            order.status = new_status
+            order.save()
+        return redirect('manage_orders')
+    status_choices = Order._meta.get_field('status').choices
+    return render(request, 'orders/update_order_status.html', {'order': order, 'status_choices': status_choices})

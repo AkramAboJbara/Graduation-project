@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Dark Orange Theme */
+            --primary: #ea580c;
+            --primary-dark: #c2410c;
+            --primary-light: #fb923c;
+            --background: #0c0a09;
+            --surface: #1c1917;
+            --surface-hover: #292524;
+            --text-primary: #fafaf9;
+            --text-secondary: #d6d3d1;
+            --text-muted: #a8a29e;
+            --border: #44403c;
+            --border-light: #57534e;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="light"] {
+            /* Light Theme */
+            --primary: #ea580c;
+            --primary-dark: #c2410c;
+            --primary-light: #fed7aa;
+            --background: #fafaf9;
+            --surface: #ffffff;
+            --surface-hover: #f5f5f4;
+            --text-primary: #1c1917;
+            --text-secondary: #44403c;
+            --text-muted: #78716c;
+            --border: #e7e5e4;
+            --border-light: #d6d3d1;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-content h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-content p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .theme-switcher {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--surface);
+            padding: 0.5rem;
+            border-radius: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .theme-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: var(--border);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        [data-theme="light"] .theme-toggle::before {
+            transform: translateX(30px);
+        }
+
+        .theme-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--shadow);
+            border-color: var(--primary);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 2rem;
+            height: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .stat-change {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .main-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px var(--shadow);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, var(--surface), var(--surface-hover));
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            background: var(--background);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            background: var(--background);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: var(--surface-hover);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border);
+            position: sticky;
+            top: 0;
+        }
+
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+            color: var(--text-primary);
+        }
+
+        .table tr:hover {
+            background: var(--surface-hover);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .status-pending {
+            background: rgba(251, 146, 60, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(251, 146, 60, 0.2);
+        }
+
+        .status-processing {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .status-shipped {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .status-delivered {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .status-cancelled {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .action-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .customer-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .customer-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-container {
+                min-width: auto;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table {
+                min-width: 600px;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1>Order Management</h1>
+                <p>Monitor and manage all customer orders from your central dashboard</p>
+            </div>
+            <div class="theme-switcher">
+                <span class="theme-label">🌙</span>
+                <div class="theme-toggle" onclick="toggleTheme()"></div>
+                <span class="theme-label">☀️</span>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Total Orders</div>
+                    <div class="stat-icon">📦</div>
+                </div>
+                <div class="stat-value" id="total-orders">-</div>
+                <div class="stat-change">Ready for your data</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Total Revenue</div>
+                    <div class="stat-icon">💰</div>
+                </div>
+                <div class="stat-value" id="total-revenue">-</div>
+                <div class="stat-change">Ready for your data</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Pending Orders</div>
+                    <div class="stat-icon">⏳</div>
+                </div>
+                <div class="stat-value" id="pending-orders">-</div>
+                <div class="stat-change">Ready for your data</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Avg Order Value</div>
+                    <div class="stat-icon">📊</div>
+                </div>
+                <div class="stat-value" id="avg-order-value">-</div>
+                <div class="stat-change">Ready for your data</div>
+            </div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="main-card">
+            <div class="card-header">
+                <h2 class="card-title">Manage Orders</h2>
+                <div class="controls">
+                    <div class="search-container">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" class="search-input" placeholder="Search by Order ID, customer name..." id="search-input">
+                        <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.25rem; display: block;">
+                            💡 Tip: Enter full Order ID (e.g., "ORD-001") for exact matches
+                        </small>
+                    </div>
+                    <select class="filter-select" id="status-filter">
+                        <option value="all">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-tbody">
+                        <!-- Your Django template loop will go here -->
+                        {% for order in orders %}
+                        <tr>
+                            <td><strong>{{ order.id }}</strong></td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-avatar">{{ order.user.username|first|upper }}</div>
+                                    {{ order.user.username }}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ order.status }}">
+                                    {{ order.status|title }}
+                                </span>
+                            </td>
+                            <td><strong>${{ order.total_amount }}</strong></td>
+                            <td>
+                                <a href="{% url 'update_order_status' order.id %}" class="action-button">
+                                    Update Status
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📋</div>
+                                    <h3>No orders found</h3>
+                                    <p>Orders will appear here when customers place them</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme switcher functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Load saved theme
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            }
+        }
+
+        // Search functionality (if you want to add client-side filtering)
+        function setupSearch() {
+            const searchInput = document.getElementById('search-input');
+            const statusFilter = document.getElementById('status-filter');
+            const tbody = document.getElementById('orders-tbody');
+            
+            function filterTable() {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                const statusValue = statusFilter.value;
+                const rows = tbody.querySelectorAll('tr');
+                
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length === 1) return; // Skip empty state row
+                    
+                    const id = cells[0].textContent.toLowerCase().trim();
+                    const user = cells[1].textContent.toLowerCase();
+                    const status = cells[2].textContent.toLowerCase().trim();
+                    
+                    // Enhanced search: prioritize exact order ID matches, then partial matches
+                    const exactIdMatch = id === searchTerm;
+                    const partialIdMatch = id.includes(searchTerm);
+                    const userMatch = user.includes(searchTerm);
+                    const matchesSearch = exactIdMatch || partialIdMatch || userMatch;
+                    
+                    const matchesStatus = statusValue === 'all' || status.includes(statusValue);
+                    
+                    row.style.display = matchesSearch && matchesStatus ? '' : 'none';
+                });
+            }
+            
+            searchInput.addEventListener('input', filterTable);
+            statusFilter.addEventListener('change', filterTable);
+        }
+
+        function updateStatistics() {
+            const rows = document.querySelectorAll('#orders-tbody tr');
+            let totalOrders = 0;
+            let totalRevenue = 0;
+            let pendingOrders = 0;
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length === 1) return; // Skip empty state row
+                
+                totalOrders++;
+                
+                // Extract total amount (remove $ and convert to number)
+                const totalText = cells[3].textContent.replace('$', '').replace(',', '');
+                const amount = parseFloat(totalText) || 0;
+                totalRevenue += amount;
+                
+                // Check if status is pending
+                const statusText = cells[2].textContent.toLowerCase();
+                if (statusText.includes('pending')) {
+                    pendingOrders++;
+                }
+            });
+            
+            const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+            
+            // Update the display
+            document.getElementById('total-orders').textContent = totalOrders.toLocaleString();
+            document.getElementById('total-revenue').textContent = '$' + totalRevenue.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            document.getElementById('pending-orders').textContent = pendingOrders.toLocaleString();
+            document.getElementById('avg-order-value').textContent = '$' + avgOrderValue.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            
+            // Update the change indicators with more meaningful text
+            const statCards = document.querySelectorAll('.stat-change');
+            statCards[0].textContent = totalOrders === 0 ? 'No orders yet' : `${totalOrders} total orders`;
+            statCards[1].textContent = totalRevenue === 0 ? 'No revenue yet' : 'Total earnings';
+            statCards[2].textContent = pendingOrders === 0 ? 'All orders processed' : `${pendingOrders} need attention`;
+            statCards[3].textContent = avgOrderValue === 0 ? 'No orders yet' : 'Average per order';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+            setupSearch();
+            updateStatistics(); // Calculate stats on page load
+            
+            // Update stats when search/filter changes (optional - for filtered view stats)
+            const searchInput = document.getElementById('search-input');
+            const statusFilter = document.getElementById('status-filter');
+            
+            searchInput.addEventListener('input', function() {
+                filterTable();
+                // Optionally update stats based on visible rows only
+                // updateStatistics();
+            });
+            
+            statusFilter.addEventListener('change', function() {
+                filterTable();
+                // Optionally update stats based on visible rows only
+                // updateStatistics();
+            });
+        });
+
+        // Add smooth transitions for theme switching
+        document.documentElement.style.setProperty('--transition', 'all 0.3s ease');
+    </script>
+</body>
+</html>

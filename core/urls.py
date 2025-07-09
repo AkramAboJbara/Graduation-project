@@ -18,5 +18,7 @@ urlpatterns = [
     path('create_checkout_session/', CreateCheckoutSessionAPIView.as_view(), name='create_checkout_session'),
     path('Stripe_Webhook_APIView/', StripeWebhookAPIView.as_view(), name='Stripe_Webhook_APIView'),
     path('profile/', UserProfileAPIView.as_view(), name='user-profile'),
+    path('admin/manage-orders/', manage_orders_view, name='manage_orders'),
+    path('admin/manage-orders/<int:order_id>/update/', update_order_status, name='update_order_status'),
 
 ]
