@@ -138,7 +138,8 @@ def sales_summary_view(request):
     }
 
     return render(request, 'sales_summary.html', context)
-@superuser_required
+
+
 def export_sales_csv(queryset, filename):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f'attachment; filename="{filename}.csv"'
@@ -155,7 +156,8 @@ def export_sales_csv(queryset, filename):
         ])
 
     return response
-@superuser_required
+
+
 def export_sales_pdf(queryset, title, filename):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{filename}.pdf"'
