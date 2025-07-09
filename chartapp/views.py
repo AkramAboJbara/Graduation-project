@@ -8,8 +8,16 @@ from reportlab.pdfgen import canvas
 from core.models import Category, Product
 from django.utils.timezone import now
 from datetime import timedelta
+from django.contrib.auth.decorators import user_passes_test
 
 
+superuser_required = user_passes_test(
+    lambda u: u.is_superuser,
+    login_url='/admin/login/' 
+)
+
+
+@superuser_required
 def dashboard_view(request):
     products = Product.objects.all()
     total_products = products.count()
@@ -38,6 +46,7 @@ def dashboard_view(request):
     }
     return render(request, 'chartapp/index.html',context)
 
+@superuser_required
 def product_list_view(request):
     # Get all categories and their associated products
     categories = Category.objects.all().prefetch_related('products')
@@ -61,7 +70,7 @@ def product_list_view(request):
 
     return render(request, 'product_list.html', context)
 
-
+@superuser_required
 def export_csv(request):
     products = Product.objects.all()
     response = HttpResponse(content_type='text/csv')
@@ -80,7 +89,7 @@ def export_csv(request):
 
     return response
 
-
+@superuser_required
 def export_pdf(request):
     products = Product.objects.all()
     response = HttpResponse(content_type='application/pdf')
@@ -111,7 +120,7 @@ def export_pdf(request):
 
     return response
 
-
+@superuser_required
 def sales_summary_view(request):
     today = now()
     one_week_ago = today - timedelta(days=7)
@@ -129,7 +138,7 @@ def sales_summary_view(request):
     }
 
     return render(request, 'sales_summary.html', context)
-
+@superuser_required
 def export_sales_csv(queryset, filename):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f'attachment; filename="{filename}.csv"'
@@ -146,7 +155,7 @@ def export_sales_csv(queryset, filename):
         ])
 
     return response
-
+@superuser_required
 def export_sales_pdf(queryset, title, filename):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{filename}.pdf"'
@@ -185,6 +194,7 @@ def export_sales_pdf(queryset, title, filename):
 
 
 # Weekly Sales Export Functions
+@superuser_required
 def export_weekly_sales_csv(request):
     today = now()
     one_week_ago = today - timedelta(days=7)
@@ -198,11 +208,14 @@ def export_weekly_sales_pdf(request):
 
 
 # Monthly Sales Export Functions
+@superuser_required
 def export_monthly_sales_csv(request):
     today = now()
     one_month_ago = today - timedelta(days=30)
     monthly_sales = Product.objects.filter(date_sold__gte=one_month_ago)
     return export_sales_csv(monthly_sales, "monthly_sales")
+
+@superuser_required
 def export_monthly_sales_pdf(request):
     today = now()
     one_month_ago = today - timedelta(days=30)
@@ -211,11 +224,14 @@ def export_monthly_sales_pdf(request):
 
 
 # Annual Sales Export Functions
+@superuser_required
 def export_annual_sales_csv(request):
     today = now()
     one_year_ago = today - timedelta(days=365)
     annual_sales = Product.objects.filter(date_sold__gte=one_year_ago)
     return export_sales_csv(annual_sales, "annual_sales")
+
+@superuser_required
 def export_annual_sales_pdf(request):
     today = now()
     one_year_ago = today - timedelta(days=365)
@@ -224,9 +240,12 @@ def export_annual_sales_pdf(request):
 
 
 # Forever Sales Export Functions
+@superuser_required
 def export_forever_sales_csv(request):
     forever_sales = Product.objects.filter(date_sold__isnull=False)
     return export_sales_csv(forever_sales, "forever_sales")
+
+@superuser_required
 def export_forever_sales_pdf(request):
     forever_sales = Product.objects.filter(date_sold__isnull=False)
     return export_sales_pdf(forever_sales, "Forever Sales", "forever_sales")

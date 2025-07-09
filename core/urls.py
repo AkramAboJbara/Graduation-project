@@ -20,5 +20,5 @@ urlpatterns = [
     path('profile/', UserProfileAPIView.as_view(), name='user-profile'),
     path('admin/manage-orders/', manage_orders_view, name='manage_orders'),
     path('admin/manage-orders/<int:order_id>/update/', update_order_status, name='update_order_status'),
-
+    path('admin-dashboard' , Admin_dashboard , name='admin-dashboard')
 ]

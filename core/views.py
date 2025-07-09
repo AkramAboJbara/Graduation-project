@@ -5,11 +5,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
-
 from django_filters import rest_framework as filters
 import stripe
 from django.utils import timezone
-
 from .models import *
 from .serializers import * 
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
@@ -26,8 +24,20 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import send_mail
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import user_passes_test
 
-authentication_classes = [TokenAuthentication]    
+
+superuser_required = user_passes_test(
+    lambda u: u.is_superuser,
+    login_url='/admin/login/' 
+)
+
+
+authentication_classes = [TokenAuthentication] 
+
+@superuser_required
+def Admin_dashboard(request):
+    return render(request , 'admin-dashboard.html')
 
 class viewsets_product(viewsets.ModelViewSet):
     queryset = Product.objects.all()
@@ -72,9 +82,6 @@ class viewsets_category(viewsets.ModelViewSet):
 
 
 
-
-
-#@login_required
 class AddToCartAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -352,11 +359,12 @@ class UserProfileAPIView(APIView):
             'orders': orders_data
         }, status=status.HTTP_200_OK)
 
-
+@superuser_required
 def manage_orders_view(request):
     orders = Order.objects.all().order_by('-created_at')
     return render(request, 'orders/manage_orders.html', {'orders': orders})
 
+@superuser_required
 def update_order_status(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     if request.method == 'POST':
