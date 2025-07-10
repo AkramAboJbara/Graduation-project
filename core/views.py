@@ -358,6 +358,33 @@ class UserProfileAPIView(APIView):
             'user': user_data,
             'orders': orders_data
         }, status=status.HTTP_200_OK)
+        
+    def patch(self, request, *args, **kwargs):
+        user = request.user
+        data = request.data.copy()
+        allowed_fields = [ 'phone_number', 'address']
+        update_data = {field: data[field] for field in allowed_fields if field in data}
+        serializer = UserSerializer(user, data=update_data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'user': serializer.data, 'message': 'Profile updated successfully.'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class DeleteOrderAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, order_id, *args, **kwargs):
+        user = request.user
+        try:
+            order = Order.objects.get(user=user, id=order_id)
+        except Order.DoesNotExist:
+            return Response({'error': 'Order not found.'}, status=status.HTTP_404_NOT_FOUND)
+        time_since_order = timezone.now() - order.created_at
+        if time_since_order > timedelta(hours=2):
+            return Response({'error': 'You can only delete an order within 2 hours of placing it.'}, status=status.HTTP_403_FORBIDDEN)
+        order.delete()
+        return Response({'message': 'Order deleted successfully.'}, status=status.HTTP_200_OK)
+
 
 @superuser_required
 def manage_orders_view(request):
