@@ -1,23 +1,22 @@
-<!-- templates/chatbot/review.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Leave a Review</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(to right, #e0ecff, #f7f9fc); 
-      margin: 0;
-      padding: 0;
-      color: #333;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      color: #2D3748;
+      min-height: 100vh;
     }
 
     .container {
@@ -25,16 +24,17 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      padding: 20px;
+      padding: 24px;
     }
 
     .review-card {
       background: white;
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
       padding: 40px;
       width: 100%;
-      max-width: 550px;
+      max-width: 500px;
+      border: 1px solid #e9ecef;
       animation: fadeIn 0.5s ease-in-out;
     }
 
@@ -43,43 +43,80 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    h2 {
+    .card-header {
       text-align: center;
-      margin-bottom: 25px;
-      font-size: 24px;
-      font-weight: 600;
-      color: #2c3e50;
+      margin-bottom: 32px;
+    }
+
+    .card-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #2D3748;
+    }
+
+    .card-title span {
+      background: linear-gradient(135deg, #ff5e1f 0%, #ff8a50 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .divider {
+      height: 3px;
+      width: 140px;
+      background: linear-gradient(135deg, #ff5e1f 0%, #ff8a50 100%);
+      margin: 0 auto;
+      border-radius: 3px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
     }
 
     label {
       display: block;
-      margin-top: 15px;
-      font-weight: 600;
+      margin-bottom: 8px;
+      font-weight: 500;
       font-size: 14px;
+      color: #4a5568;
     }
 
     input[type="email"],
     textarea {
       width: 100%;
-      padding: 12px 15px;
-      margin-top: 6px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+      padding: 14px 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
       font-size: 14px;
-      transition: border-color 0.3s;
+      transition: all 0.3s;
+      background-color: #f8fafc;
     }
 
-    input:focus,
+    input[type="email"]:focus,
     textarea:focus {
-      border-color: #007bff;
+      border-color: #ff8a50;
       outline: none;
-      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+      box-shadow: 0 0 0 3px rgba(255, 94, 31, 0.1);
+      background-color: white;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .rating-container {
+      margin: 16px 0 24px;
+    }
+
+    .rating-label {
+      margin-bottom: 12px;
     }
 
     .rating {
       display: flex;
-      gap: 10px;
-      margin-top: 10px;
+      gap: 8px;
       justify-content: center;
     }
 
@@ -88,56 +125,80 @@
     }
 
     .rating label {
-      font-size: 28px;
-      color: #ddd;
+      font-size: 32px;
+      color: #e2e8f0;
       cursor: pointer;
-      transition: color 0.2s;
+      transition: all 0.2s;
+      margin: 0;
     }
 
     .rating input:checked ~ label,
     .rating input:checked + label,
     .rating label:hover,
     .rating label:hover ~ label {
-      color: gold;
+      color: #ff8a50;
+      transform: scale(1.1);
     }
 
-    button {
-      margin-top: 25px;
+    .submit-btn {
       width: 100%;
-      padding: 14px;
-      background-color: #007bff;
+      padding: 16px;
+      background: linear-gradient(135deg, #ff5e1f 0%, #ff8a50 100%);
       color: white;
       font-size: 16px;
       font-weight: 600;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: all 0.3s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     }
 
-    button:hover {
-      background-color: #0056b3;
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(255, 94, 31, 0.2);
     }
 
     .success-message {
-      text-align: center;
-      padding: 30px;
-      font-size: 18px;
-      color: #28a745;
       display: none;
+      text-align: center;
+      padding: 40px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e9ecef;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .success-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      color: #48bb78;
+    }
+
+    .success-text {
+      font-size: 18px;
+      font-weight: 500;
+      color: #2D3748;
+      margin-bottom: 8px;
+    }
+
+    .success-subtext {
+      font-size: 14px;
+      color: #718096;
     }
 
     @media (max-width: 500px) {
       .review-card {
-        padding: 25px;
+        padding: 24px;
       }
 
-      h2 {
-        font-size: 20px;
+      .card-title {
+        font-size: 24px;
       }
 
       .rating label {
-        font-size: 24px;
+        font-size: 28px;
       }
     }
   </style>
@@ -146,32 +207,44 @@
 
 <div class="container">
   <div class="review-card">
-    <h2>We'd Love to Hear From You!</h2>
+    <div class="card-header">
+      <h1 class="card-title">We'd Love to <span>Hear</span> From You!</h1>
+      <div class="divider"></div>
+    </div>
+    
     <form id="reviewForm" method="post" action="{% url 'submit_review' %}">
       {% csrf_token %}
       
-      <label for="email">Your Email</label>
-      <input type="email" id="email" name="email" required placeholder="you@example.com">
-
-      <label for="message">Your Feedback</label>
-      <textarea id="message" name="message" rows="5" required placeholder="Tell us about your experience..."></textarea>
-
-      <label>Your Rating</label>
-      <div class="rating">
-        <input type="radio" id="star5" name="rating" value="5" required><label for="star5">&#9733;</label>
-        <input type="radio" id="star4" name="rating" value="4"><label for="star4">&#9733;</label>
-        <input type="radio" id="star3" name="rating" value="3"><label for="star3">&#9733;</label>
-        <input type="radio" id="star2" name="rating" value="2"><label for="star2">&#9733;</label>
-        <input type="radio" id="star1" name="rating" value="1"><label for="star1">&#9733;</label>
+      <div class="form-group">
+        <label for="email">Your Email</label>
+        <input type="email" id="email" name="email" required placeholder="you@example.com">
       </div>
 
-      <button type="submit">Submit Review</button>
+      <div class="form-group">
+        <label for="message">Your Feedback</label>
+        <textarea id="message" name="message" required placeholder="Tell us about your experience..."></textarea>
+      </div>
+
+      <div class="rating-container">
+        <div class="rating-label">Your Rating</div>
+        <div class="rating">
+          <input type="radio" id="star5" name="rating" value="5" required><label for="star5">★</label>
+          <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+          <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+          <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+          <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">Submit Review</button>
     </form>
   </div>
 
   <!-- Success Message -->
   <div id="successMessage" class="success-message">
-    ✅ Thank you for your review! We appreciate your feedback.
+    <div class="success-icon">✓</div>
+    <div class="success-text">Thank you for your review!</div>
+    <div class="success-subtext">We appreciate your feedback and will use it to improve our service.</div>
   </div>
 </div>
 
@@ -181,11 +254,17 @@
     const card = document.querySelector('.review-card');
     const successMessage = document.getElementById('successMessage');
 
-    form.addEventListener('submit', function () {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      
+      // Simulate form submission
       setTimeout(() => {
         card.style.display = 'none';
         successMessage.style.display = 'block';
       }, 500);
+      
+      // In a real implementation, you would submit the form here
+      // form.submit();
     });
   });
 </script>

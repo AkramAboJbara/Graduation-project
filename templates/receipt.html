@@ -4,69 +4,181 @@
 <head>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            color: #333;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #2D3748;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        .email-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+        }
+        .email-header {
+            background: linear-gradient(135deg, #2D3748 0%, #1A202C 100%);
+            padding: 32px;
+            text-align: center;
+            color: white;
+        }
+        .email-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .email-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .highlight {
+            background: linear-gradient(135deg, #ff5e1f 0%, #ff8a50 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: bold;
+        }
+        .content-section {
+            padding: 24px 32px;
         }
         h2 {
-            color: #2a9d8f;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        h2 svg {
+            width: 24px;
+            height: 24px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 16px;
+            margin: 16px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
         th {
-            background-color: #2a9d8f;
+            background: linear-gradient(135deg, #2D3748 0%, #1A202C 100%);
             color: white;
-            padding: 10px;
+            padding: 12px 16px;
             text-align: left;
+            font-weight: bold;
         }
         td {
-            padding: 10px;
-            border: 1px solid #ccc;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e9ecef;
         }
         tr:nth-child(even) {
-            background-color: #f6f6f6;
+            background-color: #f8f9fa;
         }
         .total-row {
             font-weight: bold;
-            background-color: #e9ecef;
+            background-color: #f1f3f5;
+        }
+        .total-row td {
+            border-top: 2px solid #e9ecef;
+            border-bottom: none;
+        }
+        .product-link {
+            color: #2D3748;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .product-link:hover {
+            color: #ff5e1f;
         }
         .footer {
             margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #e9ecef;
             font-size: 14px;
-            color: #555;
+            color: #6c757d;
+            text-align: center;
+        }
+        .thank-you {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .support-link {
+            color: #ff5e1f;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .divider {
+            height: 3px;
+            width: 80px;
+            background: linear-gradient(135deg, #ff5e1f 0%, #ff8a50 100%);
+            margin: 16px auto;
+            border-radius: 3px;
         }
     </style>
 </head>
 <body>
-
-    <h2>Hello {{ user }}, thank you for your purchase!</h2>
-    <p>Here is your receipt:</p>
-
-    <table>
-        <tr>
-            <th>Item</th>
-            <th>Quantity</th>
-            <th>Unit Price</th>
-            <th>Total</th>
-        </tr>
-        {% for item in cart_items %}
-        <tr>
-            <td>{{ item.product.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>${{ item.product.price }}</td>
-            <td>${{ item.quantity|multiply:item.product.price }}</td>
-        </tr>
-        {% endfor %}
-        <tr class="total-row">
-            <td colspan="3">Total Paid</td>
-            <td>${{ total }}</td>
-        </tr>
-    </table>
-
-    <p class="footer">If you have any questions, feel free to contact our support team.<br>
-    Thank you for shopping with us!</p>
-
+    <div class="email-container">
+        <div class="email-card">
+            <div class="email-header">
+                <div class="email-title">Thank you for your <span class="highlight">purchase</span>, {{ user }}!</div>
+                <div class="email-subtitle">Here's your order confirmation</div>
+            </div>
+            
+            <div class="content-section">
+                <h2>
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119.993z"></path>
+                    </svg>
+                    Order Summary
+                </h2>
+                
+                <table>
+                    <tr>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                    </tr>
+                    {% for item in cart_items %}
+                    <tr>
+                        <td>
+                            <a href="https://hamza-masoud.github.io/e-commerce-frontend/product/{{ item.product.slug }}" class="product-link">
+                                {{ item.product.name }}
+                            </a>
+                        </td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.product.price }}</td>
+                        <td>${{ item.quantity|multiply:item.product.price }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="total-row">
+                        <td colspan="3">Total Paid</td>
+                        <td>${{ total }}</td>
+                    </tr>
+                </table>
+                
+                <div class="footer">
+                    <div class="thank-you">We appreciate your business!</div>
+                    <div class="divider"></div>
+                    <p>
+                        If you have any questions, feel free to contact our 
+                        <a href="mailto:support@example.com" class="support-link">support team</a>.
+                        <br>
+                        Thank you for shopping with us!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
