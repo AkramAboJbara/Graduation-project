@@ -377,16 +377,22 @@ class DeleteOrderAPIView(APIView):
     def delete(self, request, order_id, *args, **kwargs):
         user = request.user
         try:
-            order = Order.objects.get(user=user, id=order_id)
+            order = Order.objects.get(id=order_id, user=user)
         except Order.DoesNotExist:
             return Response({'error': 'Order not found.'}, status=status.HTTP_404_NOT_FOUND)
-        time_since_order = timezone.now() - order.created_at
-        if time_since_order > timedelta(hours=2):
-            return Response({'error': 'You can only delete an order within 2 hours of placing it.'}, status=status.HTTP_403_FORBIDDEN)
+
+
+        if timezone.now() - order.created_at > timedelta(hours=2):
+            return Response({'error': 'Orders can only be deleted within 2 hours of creation.'}, status=status.HTTP_403_FORBIDDEN)
+
+    
+        for item in order.items.all():  
+            product = item.product
+            product.stock += item.quantity 
+            product.save()
+
         order.delete()
-        return Response({'message': 'Order deleted successfully.'}, status=status.HTTP_200_OK)
-
-
+        return Response({'message': 'Order deleted and stock updated.'}, status=status.HTTP_200_OK)
 @superuser_required
 def manage_orders_view(request):
     orders = Order.objects.all().order_by('-created_at')
