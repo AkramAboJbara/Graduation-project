@@ -13,7 +13,17 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import views as auth_views , get_user_model
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
+from django.views import View
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.contrib.auth import get_user_model
+import random
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 # Create your views here.
 
 
@@ -83,10 +93,92 @@ class LogoutView(APIView):
 
 
 
-class CustomPasswordResetView(auth_views.PasswordResetView):
-    template_name = 'password_reset.html'
-    email_template_name = 'password_reset_email.html'
-    success_url = reverse_lazy('password_reset_done')
+class PasswordResetRequestView(View):
+    def get(self, request):
+        return render(request, 'password_reset.html')
+
+    def post(self, request):
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            code = str(random.randint(100000, 999999))
+
+            # Store in session
+            request.session['reset_email'] = email
+            request.session['verification_code'] = code
+
+            # Send the code
+            send_mail(
+                subject='Your Verification Code',
+                message=f'Your password reset verification code is: {code}',
+                from_email='abomoh975@gmail.com',
+                recipient_list=[email],
+            )
+
+            return redirect('verify_code')
+
+        except User.DoesNotExist:
+            return render(request, 'password_reset.html', {
+                'error': 'No user with that email.'
+            })
+
+from django.views import View
+from django.shortcuts import render, redirect
+from django.contrib.auth import get_user_model
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.urls import reverse
+
+User = get_user_model()
+
+class CodeVerificationView(View):
+    def get(self, request):
+        return render(request, 'verify_code.html')
+
+    def post(self, request):
+        input_code = request.POST.get('code')
+        session_code = request.session.get('verification_code')
+        email = request.session.get('reset_email')
+
+        if input_code == session_code and email:
+            try:
+                user = User.objects.get(email=email)
+
+                # Create uid and token
+                uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+                token = default_token_generator.make_token(user)
+
+                # Render email template
+                html_content = render_to_string('password_reset_email.html', {
+                    'protocol': 'http',
+                    'domain': request.get_host(),
+                    'uidb64': uidb64,
+                    'token': token,
+                })
+
+                # Send reset email
+                msg = EmailMultiAlternatives(
+                    subject='Reset Your Password',
+                    body="",
+                    from_email='abomoh975@gmail.com',
+                    to=[email]
+                )
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
+
+                # Optional: clean up session
+                del request.session['verification_code']
+                del request.session['reset_email']
+
+                return redirect('password_reset_done')
+
+            except User.DoesNotExist:
+                return redirect('password_reset')
+        else:
+            return render(request, 'verify_code.html', {'error': 'Invalid code. Please try again.'})
 
 class CustomPasswordResetDoneView(auth_views.PasswordResetDoneView):
     template_name = 'password_reset_done.html'
