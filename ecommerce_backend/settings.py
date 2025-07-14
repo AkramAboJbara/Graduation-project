@@ -65,7 +65,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'ecommerce_backend.urls'
-
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URl = 'static/'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -143,9 +144,6 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Automated Swagger docs for Django REST Framework',
     'VERSION': '1.0.0',
 }
-
-STATIC_URL = 'static/'
-
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'core.User'
