@@ -299,7 +299,8 @@ class StripeWebhookAPIView(APIView):
             cart = Cart.objects.get(id=cart_id)
             user = User.objects.get(id=user_id)
             cart_items = CartItem.objects.filter(cart=cart)
-            
+            if not cart_items.exists():
+                return Response({"error": "No items in cart to process."}, status=400)
             # Send email
             context = {
                 'user': user.first_name,
