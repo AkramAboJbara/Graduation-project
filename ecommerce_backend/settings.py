@@ -64,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'ecommerce_backend.urls'
@@ -165,5 +166,3 @@ EMAIL_USE_SSL = False
 STRIPE_PUBLIC_KEY ='pk_test_51QcpDF2Nr0G4DsWGvWHQdeFHYDjIRqDMkeuJMxqsbEWJmvyZs99h9aPSwePszOlymsise2QSBdxYI0z6VCIvE5tj00csMzJHk7'
 STRIPE_SECRET_KEY ='sk_test_51QcpDF2Nr0G4DsWGo2PDTID9jANstyjgTuX7PlkDaZovPxWrk7Fa1qzZkeILYEwpjD17whsvEdAntXgQpsSoWMZM001abR6CnS'
 STRIPE_WEBHOOK_KEY ='whsec_0T7QKB7QnzTZiquzK4SIYqEvm9y7gaVp'
-# Static files
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
