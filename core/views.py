@@ -269,8 +269,8 @@ class CreateCheckoutSessionAPIView(APIView):
                 "cart_id": str(cart.id),
                 "user_id": str(user.id)
             },
-            success_url='http://localhost:3000/e-commerce-frontend/',
-            cancel_url='http://localhost:3000/e-commerce-frontend/about',
+            success_url='https://hamza-masoud.github.io/e-commerce-frontend/',
+            cancel_url='https://hamza-masoud.github.io/e-commerce-frontend//about',
         )
         return Response({
                 "id": checkout_session
