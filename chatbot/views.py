@@ -73,9 +73,9 @@ FAQ_RESPONSES = {
     "terms of service": "Our Terms of Service ensure a safe, fair shopping experience for everyone. You can review the complete terms on our website's legal section.",
 
     # Feedback
-    "leave a review": 'We value your opinion! Share your experience with us by <a href="https://www.example.com/reviews" target="_blank" style="color: #0066cc; font-weight: 500;">leaving a review</a>. Your feedback helps us improve!',
+    "leave a review": 'We value your opinion! Share your experience with us by <a href="https://shophup.onrender.com/review/" target="_blank" style="color: #0066cc; font-weight: 500;">leaving a review</a>. Your feedback helps us improve!',
 
-    "leave a feedback": 'Your thoughts matter! Help us serve you better by <a href="https://www.example.com/feedback" target="_blank" style="color: #0066cc; font-weight: 500;">sharing your feedback</a>. Survey participants get 10% off their next order!',
+    "leave a feedback": 'Your thoughts matter! Help us serve you better by <a href="https://shophup.onrender.com/review/" target="_blank" style="color: #0066cc; font-weight: 500;">sharing your feedback</a>. Survey participants get 10% off their next order!',
 
     # Added new common questions
     "damaged item": "Oh no! We're sorry to hear that. Please contact us within 48 hours of delivery at support@example.com with photos of the damaged item and your order number. We'll make it right!",
