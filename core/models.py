@@ -50,8 +50,9 @@ class Product(models.Model):
     date_sold = models.DateTimeField(null=True, blank=True)
     def __str__(self):
         return self.name
+
     @property
-    def get_discounted_price(self):
+    def price_after_discount(self):
         discounted_price = self.price - (self.price * self.discount_percentage/100)
         return round(discounted_price,2)
 
