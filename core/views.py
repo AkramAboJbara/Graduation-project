@@ -127,7 +127,7 @@ class AddToCartAPIView(APIView):
 
         # recalculate the cart total based on all items in the cart
         cart_items = CartItem.objects.filter(cart=cart)
-        cart.total = sum(Decimal(str(item.product.price)) * Decimal(str(item.quantity)) for item in cart_items)
+        cart.total = sum(Decimal(str(item.product.price_after_discount)) * Decimal(str(item.quantity)) for item in cart_items)
         cart.save()
         serializer = CartItemSerializer(cart_item)
         return Response(
@@ -181,7 +181,7 @@ class RemoveFromCartAPIView(APIView):
 
         # recalculate the cart total based on all items in the cart
         cart_items = CartItem.objects.filter(cart=cart)
-        cart.total = sum(Decimal(str(item.product.price)) * Decimal(str(item.quantity)) for item in cart_items)
+        cart.total = sum(Decimal(str(item.product.price_after_discount)) * Decimal(str(item.quantity)) for item in cart_items)
         cart.save()
 
         return Response(
@@ -207,7 +207,7 @@ class ViewCartContentApiView(APIView):
                 status=status.HTTP_200_OK
             )
         cart_items = CartItem.objects.filter(cart=cart)
-        total_price = sum(item.product.price * item.quantity for item in cart_items)
+        total_price = sum(item.product.price_after_discount * item.quantity for item in cart_items)
         response_data = {
             "total_price": float(total_price),  
             "products": [
@@ -215,7 +215,7 @@ class ViewCartContentApiView(APIView):
                     "product_id": item.product.id,
                     "product_name": item.product.name,
                     "quantity": item.quantity,
-                    "price": float(item.product.price * item.quantity),   #convert decimal to float
+                    "price": (item.product.price_after_discount * item.quantity),   #convert decimal to float
                     "image": item.product.image   
                 }
                 for item in cart_items
@@ -253,7 +253,7 @@ class CreateCheckoutSessionAPIView(APIView):
                     {   
                         'price_data': {
                             'currency': 'usd',
-                            'unit_amount': int(item.product.price * 100),  # Convert to cents
+                            'unit_amount': int(item.product.price_after_discount * 100),  # Convert to cents
                             'product_data': {
                                 'name': item.product.name,
                                 "images": [item.product.image] if item.product.image else [],
@@ -299,7 +299,8 @@ class StripeWebhookAPIView(APIView):
             cart = Cart.objects.get(id=cart_id)
             user = User.objects.get(id=user_id)
             cart_items = CartItem.objects.filter(cart=cart)
-            
+            if not cart_items.exists():
+                return Response({"error": "No items in cart to process."}, status=400)
             # Send email
             context = {
                 'user': user.first_name,
@@ -335,7 +336,7 @@ class StripeWebhookAPIView(APIView):
                     order=order,
                     product=item.product,
                     quantity=item.quantity,
-                    price=item.product.price * Decimal(item.quantity)
+                    price=item.product.price_after_discount * Decimal(item.quantity)
                 )
                 item.product.sales += item.quantity
                 item.product.date_sold = timezone.now()
