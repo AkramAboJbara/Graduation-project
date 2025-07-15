@@ -79,13 +79,13 @@
         }
 
         .dashboard-card {
-            background: white;
+            background: rgb(155, 147, 147);
             border-radius: 1rem;
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
             border: none;
-        }
+        }   
 
         .dashboard-card:hover {
             transform: translateY(-8px);
@@ -140,7 +140,13 @@
         .django-admin:hover {
             background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
         }
+        .reviews {
+            background: linear-gradient(135deg, #6e05f7 0%, #10eb1b 100%);
+        }
 
+        .reviews:hover {
+            background: linear-gradient(135deg, #80e709 0%, #0643a0 100%);
+        }
         .icon-container {
             width: 4rem;
             height: 4rem;
@@ -282,6 +288,24 @@
                 </div>
             </div>
         </div>
+
+        <!-- Reviews Section -->
+         
+        <div class="dashboard-card">
+    <div class="card-content">
+        <a href="/reviews-list" class="card-link">
+            <div class="card-inner reviews">
+                <div class="icon-container">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3 class="card-title">Clients Reviews</h3>
+                <p class="card-description">View customer feedback</p>
+            </div>
+        </a>
+    </div>
+</div>
+</div>
+
 
         <!-- Footer -->
         <div class="footer">
