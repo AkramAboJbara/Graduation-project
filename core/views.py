@@ -127,7 +127,7 @@ class AddToCartAPIView(APIView):
 
         # recalculate the cart total based on all items in the cart
         cart_items = CartItem.objects.filter(cart=cart)
-        cart.total = sum(Decimal(str(item.product.get_discounted_price)) * Decimal(str(item.quantity)) for item in cart_items)
+        cart.total = sum(Decimal(str(item.product.price_after_discount)) * Decimal(str(item.quantity)) for item in cart_items)
         cart.save()
         serializer = CartItemSerializer(cart_item)
         return Response(
@@ -181,7 +181,7 @@ class RemoveFromCartAPIView(APIView):
 
         # recalculate the cart total based on all items in the cart
         cart_items = CartItem.objects.filter(cart=cart)
-        cart.total = sum(Decimal(str(item.product.get_discounted_price)) * Decimal(str(item.quantity)) for item in cart_items)
+        cart.total = sum(Decimal(str(item.product.price_after_discount)) * Decimal(str(item.quantity)) for item in cart_items)
         cart.save()
 
         return Response(
@@ -207,7 +207,7 @@ class ViewCartContentApiView(APIView):
                 status=status.HTTP_200_OK
             )
         cart_items = CartItem.objects.filter(cart=cart)
-        total_price = sum(item.product.get_discounted_price * item.quantity for item in cart_items)
+        total_price = sum(item.product.price_after_discount * item.quantity for item in cart_items)
         response_data = {
             "total_price": float(total_price),  
             "products": [
@@ -215,7 +215,7 @@ class ViewCartContentApiView(APIView):
                     "product_id": item.product.id,
                     "product_name": item.product.name,
                     "quantity": item.quantity,
-                    "price": (item.product.get_discounted_price * item.quantity),   #convert decimal to float
+                    "price": (item.product.price_after_discount * item.quantity),   #convert decimal to float
                     "image": item.product.image   
                 }
                 for item in cart_items
@@ -253,7 +253,7 @@ class CreateCheckoutSessionAPIView(APIView):
                     {   
                         'price_data': {
                             'currency': 'usd',
-                            'unit_amount': int(item.product.get_discounted_price * 100),  # Convert to cents
+                            'unit_amount': int(item.product.price_after_discount * 100),  # Convert to cents
                             'product_data': {
                                 'name': item.product.name,
                                 "images": [item.product.image] if item.product.image else [],
@@ -269,8 +269,8 @@ class CreateCheckoutSessionAPIView(APIView):
                 "cart_id": str(cart.id),
                 "user_id": str(user.id)
             },
-            success_url='https://hamza-masoud.github.io/e-commerce-frontend/',
-            cancel_url='https://hamza-masoud.github.io/e-commerce-frontend//about',
+            success_url='http://localhost:3000/e-commerce-frontend/',
+            cancel_url='http://localhost:3000/e-commerce-frontend/about',
         )
         return Response({
                 "id": checkout_session
@@ -336,7 +336,7 @@ class StripeWebhookAPIView(APIView):
                     order=order,
                     product=item.product,
                     quantity=item.quantity,
-                    price=item.product.get_discounted_price * Decimal(item.quantity)
+                    price=item.product.price_after_discount * Decimal(item.quantity)
                 )
                 item.product.sales += item.quantity
                 item.product.date_sold = timezone.now()
