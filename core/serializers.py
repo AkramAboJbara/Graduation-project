@@ -51,7 +51,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def get_price_after_discount(self, obj):
         discount_amount = obj.price * (obj.discount_percentage / 100)
-        return obj.price - discount_amount
+        return round(obj.price - discount_amount, 2)
     
 
     def to_representation(self, instance):
