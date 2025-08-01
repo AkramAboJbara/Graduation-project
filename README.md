@@ -1,6 +1,7 @@
 # 🛍️ Online Shop Simulation
 
-**An interactive e-commerce platform for businesses and entrepreneurs to simulate real-world online shopping operations.**
+**An interactive e-commerce platform for businesses and entrepreneurs to simulate real-world online shopping operations.
+Try it your self https://hamza-masoud.github.io/e-commerce-frontend/**
 
 ---
 
