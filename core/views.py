@@ -301,24 +301,30 @@ class StripeWebhookAPIView(APIView):
             cart_items = CartItem.objects.filter(cart=cart)
             if not cart_items.exists():
                 return Response({"error": "No items in cart to process."}, status=400)
-            # Send email
-            context = {
-                'user': user.first_name,
-                'cart': cart,
-                'cart_items': cart_items,
-                'total': cart.total,
-            }
 
-            html_message = render_to_string('receipt.html', context)
-            plain_message = strip_tags(html_message)
+            try:
+                            # Send email
+                context = {
+                    'user': user.first_name,
+                    'cart': cart,
+                    'cart_items': cart_items,
+                    'total': cart.total,
+                }
 
-            send_mail(
-                subject="Your Purchase Receipt",
-                message=plain_message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                html_message=html_message
-            )
+                html_message = render_to_string('receipt.html', context)
+                plain_message = strip_tags(html_message)
+
+                send_mail(
+                    subject="Your Purchase Receipt",
+                    message=plain_message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    html_message=html_message
+                )
+            
+            except Exception as e:
+                print(e)
+            
                         # Create the order
             order = Order.objects.create(
                 user=user,
