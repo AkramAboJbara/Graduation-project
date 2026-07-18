@@ -301,7 +301,7 @@ class StripeWebhookAPIView(APIView):
             cart_items = CartItem.objects.filter(cart=cart)
             if not cart_items.exists():
                 return Response({"error": "No items in cart to process."}, status=400)
-
+            """
             try:
                             # Send email
                 context = {
@@ -324,7 +324,7 @@ class StripeWebhookAPIView(APIView):
             
             except Exception as e:
                 print(e)
-            
+            """ 
                         # Create the order
             order = Order.objects.create(
                 user=user,
